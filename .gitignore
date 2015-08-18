@@ -10,3 +10,4 @@ env/*
 !env/requirements.txt
 # PyCharm
 .idea
+*.db
