@@ -11,6 +11,6 @@ from __init__ import app
 import models
 
 
-@app.route('/')
-def index():
-    return flask.render_template('index.html', title='Home')
+@app.route('/electricity')
+def electricity():
+    return flask.render_template('electricity.html', title='Electricity')

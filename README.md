@@ -23,4 +23,6 @@ Current Projects
 ----------
 
 #### Website
-todo
+Simply activate the virtual environment and run the run.py file in the website folder
+`python website/run.py` or  
+`python run.py` if in the website folder

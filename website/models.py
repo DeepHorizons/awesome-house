@@ -67,7 +67,10 @@ def after_request_handler():
 @atexit.register
 def on_exit_database_close():
     logger.warning('Program encountered an error, closing connection to DB')
-    after_request_handler()
+    try:
+        after_request_handler()
+    except AttributeError:
+        pass
     return
 
 
