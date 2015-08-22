@@ -1,0 +1,6 @@
+/* Site specific styles to overwrite the bootstrap ones */
+
+body {
+  background:#F5F5F5;
+  /* padding-top: 70px; *//* Add this if the navbar is fixed to top */
+}
