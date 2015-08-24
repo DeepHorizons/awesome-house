@@ -1,5 +1,4 @@
 import peewee
-import datetime
 import os
 import logging
 import atexit
@@ -37,12 +36,14 @@ class Electricity(BaseModel):
 class Event(BaseModel):
     date = peewee.DateField()
     name = peewee.CharField()
+    deleted = peewee.BooleanField(default=False)
 
 
 class Todo(BaseModel):
     event = peewee.ForeignKeyField(Event, related_name='todos', null=True)
     task = peewee.CharField()
     done = peewee.BooleanField(default=False)
+    deleted = peewee.BooleanField(default=False)
 
 
 class Bill(BaseModel):
@@ -58,17 +59,11 @@ def before_request_handler():
     return
 
 
+@atexit.register
 def after_request_handler():
     logger.debug('Closing connection to DB')
-    db.close()
-    return
-
-
-@atexit.register
-def on_exit_database_close():
-    logger.warning('Program encountered an error, closing connection to DB')
     try:
-        after_request_handler()
+        db.close()
     except AttributeError:
         pass
     return
