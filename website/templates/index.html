@@ -40,14 +40,17 @@
                     </tr>
                 </thead>
                 <tbody>
-                {% for event in events %}
-                <tr>
-                    <td>{{ event.name }}</td>
-                    <td>{{ event.date }}</td>
-                </tr>
-                {% else %}
-                No events planned
-                {% endfor %}
+                    {% for event in events %}
+                    <tr>
+                        <td>{{ event.name }}</td>
+                        <td>{{ event.date }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td>No Events planned</td>
+                        <td></td>
+                    </tr>
+                    {% endfor %}
                 </tbody>
             </table>
         </div>
@@ -63,13 +66,15 @@
                     </tr>
                 </thead>
                 <tbody>
-                {% for task in tasks %}
-                <tr>
-                    <td>{{ task.task }}</td>
-                </tr>
-                {% else %}
-                No tasks listed
-                {% endfor %}
+                    {% for task in tasks %}
+                    <tr>
+                        <td>{{ task.task }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td>No tasks listed</td>
+                    </tr>
+                    {% endfor %}
                 </tbody>
             </table>
         </div>

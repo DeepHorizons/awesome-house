@@ -64,7 +64,11 @@ class Bill(BaseModel):
 # -----------Helper functions-----------
 def before_request_handler(database=db):
     logger.debug('Opening connection to DB')
-    database.connect()
+    try:
+        database.connect()
+    except AttributeError as e:
+        logger.critical('No database defined')
+        raise e
     return
 
 
