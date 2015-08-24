@@ -17,12 +17,17 @@ activate it
 and install the requirement file  
 `pip install -r env/requirements.txt`
 
-This will install all dependencies for all the projects
+This will install all dependencies for all the projects. The virtual environment must be activated for all projects.
 
 Current Projects
 ----------
 
 #### Website
-Simply activate the virtual environment and run the run.py file in the website folder
+The first step is to initialize the database. This can be done by executing models.py  
+```bash
+cd website
+python models.py
+```
+Then, simply run the run.py file in the website folder.  
 `python website/run.py` or  
 `python run.py` if in the website folder

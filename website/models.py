@@ -5,17 +5,26 @@ import atexit
 
 logger = logging.getLogger(__name__)
 
-DB_NAME = 'database.db'
-if os.path.exists('./{0}'.format(DB_NAME)):
-    DB_PATH = './{0}'.format(DB_NAME)
-elif os.path.exists('./website/{0}'.format(DB_NAME)):
-    DB_PATH = './website/{0}'.format(DB_NAME)
-else:
-    logger.critical('database could not be located')
-    exit()
+# Local imports
+from __init__ import app
 
-logger.debug('Database is at {}'.format(DB_PATH))
-db = peewee.SqliteDatabase(DB_PATH)
+if __name__ != '__main__':
+    if os.path.exists('./{0}'.format(app.config['DB_NAME'])):
+        DB_PATH = './{0}'.format(app.config['DB_NAME'])
+    elif os.path.exists('./website/{0}'.format(app.config['DB_NAME'])):
+        DB_PATH = './website/{0}'.format(app.config['DB_NAME'])
+    else:
+        logger.critical('database could not be located')
+        # exit()
+else:
+    DB_PATH = './{0}'.format(app.config['DB_NAME'])
+
+try:
+    logger.debug('Database is at {}'.format(DB_PATH))
+except NameError:
+    db = None
+else:
+    db = peewee.SqliteDatabase(DB_PATH)
 
 
 class BaseModel(peewee.Model):
@@ -53,22 +62,29 @@ class Bill(BaseModel):
 
 
 # -----------Helper functions-----------
-def before_request_handler():
+def before_request_handler(database=db):
     logger.debug('Opening connection to DB')
-    db.connect()
+    database.connect()
     return
 
 
-@atexit.register
-def after_request_handler():
+def after_request_handler(database=db):
     logger.debug('Closing connection to DB')
     try:
-        db.close()
+        database.close()
     except AttributeError:
         pass
+    return
+atexit.register(after_request_handler, db)
+
+
+def create_tables():
+    before_request_handler(db)
+    db.create_tables([Electricity, Event, Todo, Bill], True)
     return
 
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s : %(name)s : %(levelname)s : %(message)s')
     before_request_handler()
+    create_tables()
