@@ -4,3 +4,7 @@ body {
   background:#F5F5F5;
   /* padding-top: 70px; *//* Add this if the navbar is fixed to top */
 }
+
+.table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
+  background-color: #C0C0C0;
+}

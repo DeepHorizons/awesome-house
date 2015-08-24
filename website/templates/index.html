@@ -10,6 +10,69 @@
 </div>
 
 <div class="row">
-    Test
+    <div class="col-xs-4">
+        Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test
+    </div>
+    <div class="col-xs-4">
+        Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test
+    </div>
+    <div class="col-xs-4">
+        Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test
+    </div>
+</div>
+<div class="row">
+    <div class="col-xs-4 col-xs-offset-4">
+        <center>
+        Another test
+            </center>
+    </div>
+</div>
+<div class="row">
+
+    <div class="col-xs-6">
+        <div class="table-responsive">
+            <center><h4>Nearing events</h4></center>
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Event</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for event in events %}
+                <tr>
+                    <td>{{ event.name }}</td>
+                    <td>{{ event.date }}</td>
+                </tr>
+                {% else %}
+                No events planned
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="col-xs-6">
+        <div class="table-responsive">
+            <center><h4>Todos</h4></center>
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Task</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for task in tasks %}
+                <tr>
+                    <td>{{ task.task }}</td>
+                </tr>
+                {% else %}
+                No tasks listed
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 {% endblock %}
