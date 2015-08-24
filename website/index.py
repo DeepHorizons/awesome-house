@@ -20,8 +20,16 @@ def index():
     return flask.render_template('index.html', title='Home', tasks=tasks, events=nearing_events)
 
 
-@app.route('/todo/by-id/<int:todo_id>')
-def todo_by_id(todo_id):
-    task = models.Todo.get(models.Todo.id == todo_id)
-    return task.task
+@app.before_request
+def before_request():
+    flask.g.db = models.db
+    models.before_request_handler(flask.g.db)
+    return
 
+
+@app.teardown_request
+def teardown_request(exception):
+    db = getattr(flask.g, 'db', None)
+    if db is not None:
+        models.after_request_handler(db)
+    return
