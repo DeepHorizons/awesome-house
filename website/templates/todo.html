@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="row">
+    <div class="col-xs-12 col-sm-6">
+        <div class="table-responsive">
+            <center><h4>Todos</h4></center>
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Event</th>
+                        <th>Task</th>
+                        <th>Done?</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for todo in todos %}
+                    <tr>
+                        {% if todo.event %}<td>{{ todo.event.name }}</td>{% else %} <td></td>{% endif %}
+                        <td>{{ todo.task }}</td>
+                        <td><input type="checkbox" name="{{ todo.id }}" {% if todo.done %}checked{% endif %} onclick="testClick(this)">{{ todo.done }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td>No tasks listed</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extrajs %}
+<script>
+    xmlhttp=new XMLHttpRequest();
+    function testClick(cb) {
+        console.log( cb.name + " Clicked, new value = " + cb.checked);
+        xmlhttp.open("POST", "/todo/status", true);
+        xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+        xmlhttp.send("id=" + cb.name + "&status=" + cb.checked);
+    }
+</script>
+{% endblock %}
