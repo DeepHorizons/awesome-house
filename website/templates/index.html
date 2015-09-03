@@ -42,7 +42,7 @@
                 <tbody>
                     {% for event in events %}
                     <tr>
-                        <td>{{ event.name }}</td>
+                        <td><a href="/events/by-id/{{ event.id }}">{{ event.name }}</a></td>
                         <td>{{ event.date }}</td>
                     </tr>
                     {% else %}
@@ -58,7 +58,7 @@
 
     <div class="col-xs-6">
         <div class="table-responsive">
-            <center><h4>Todos</h4></center>
+            <center><h4>To-dos</h4></center>
             <table class="table table-hover">
                 <thead>
                     <tr>
@@ -67,9 +67,9 @@
                 </thead>
                 <tbody>
                     {% for task in tasks %}
-                    <tr>
-                        <td>{{ task.task }}</td>
-                    </tr>
+                        <tr>
+                            <td><a href="/todo/by-id/{{ task.id }}">{{ task.task }}</a></td>
+                        </tr>
                     {% else %}
                     <tr>
                         <td>No tasks listed</td>
