@@ -50,9 +50,7 @@ def todo_status():
         return flask.jsonify()
 
     logger.debug('Updating ID {0} to status {1}'.format(task_id, status))
-    date_done = None
-    if status is True:
-        date_done = datetime.date.today()
-    models.Todo.update(done=status, date_done=date_done).where(models.Todo.id == task_id).execute()
+    date_done = datetime.date.today()
+    models.Todo.update(done=status, date_done=date_done if status else None).where(models.Todo.id == task_id).execute()
 
-    return flask.jsonify(date_done=date_done)
+    return flask.jsonify(task_id=task_id, date_done=str(date_done) if status else None)

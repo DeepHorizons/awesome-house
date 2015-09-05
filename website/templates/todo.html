@@ -18,8 +18,8 @@
                     <tr>
                         {% if todo.event %}<td>{{ todo.event.name }}</td>{% else %} <td></td>{% endif %}
                         <td>{{ todo.task }}</td>
-                        <td><input type="checkbox" name="{{ todo.id }}" {% if todo.done %}checked{% endif %} onclick="testClick(this)">{{ todo.done }}</td>
-                        <td>{{ todo.date_done }}</td>
+                        <td><input type="checkbox" name="{{ todo.id }}" {% if todo.done %}checked{% endif %} onclick="sendCheckBox(this)"></td>
+                        <td><div id="{{ todo.id }}">{% if todo.date_done %}{{ todo.date_done }}{% endif %}</div></td>
                     </tr>
                     {% else %}
                     <tr>
@@ -36,7 +36,17 @@
 {% block extrajs %}
 <script>
     xmlhttp=new XMLHttpRequest();
-    function testClick(cb) {
+    xmlhttp.onreadystatechange=function()
+      {
+      if (xmlhttp.readyState==4 && xmlhttp.status==200)
+        {
+        var resp = JSON.parse(xmlhttp.responseText);
+        console.log("Response Text: " + resp['task_id'] + " " + resp['date_done']);
+        var task_date = document.getElementById(resp['task_id']);
+        task_date.innerHTML = resp['date_done'];
+        }
+      }
+    function sendCheckBox(cb) {
         console.log( cb.name + " Clicked, new value = " + cb.checked);
         xmlhttp.open("POST", "/todo/status", true);
         xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
