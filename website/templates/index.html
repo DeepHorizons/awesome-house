@@ -63,13 +63,17 @@
                 <thead>
                     <tr>
                         <th>Task</th>
+                        <th>Done?</th>
+                        <th>Date Done</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for task in tasks %}
-                        <tr>
-                            <td><a href="/todo/by-id/{{ task.id }}">{{ task.task }}</a></td>
-                        </tr>
+                    {% for todo in todos %}
+                    <tr name="row_{{ todo.id }}" {% if todo.done %}class="strikeout"{% endif %}>
+                        <td><a href="/todo/by-id/{{ todo.id }}">{{ todo.task }}</a></td>
+                        <td><input type="checkbox" name="{{ todo.id }}" {% if todo.done %}checked{% endif %} onclick="sendCheckBox(this)"></td>
+                        <td><div id="{{ todo.id }}">{% if todo.date_done %}{{ todo.date_done }}{% endif %}</div></td>
+                    </tr>
                     {% else %}
                     <tr>
                         <td>No tasks listed</td>
@@ -80,4 +84,8 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extrajs %}
+<script src="/static/js/todo.js"></script>
 {% endblock %}

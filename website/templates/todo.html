@@ -34,23 +34,5 @@
 {% endblock %}
 
 {% block extrajs %}
-<script>
-    xmlhttp=new XMLHttpRequest();
-    xmlhttp.onreadystatechange=function()
-      {
-      if (xmlhttp.readyState==4 && xmlhttp.status==200)
-        {
-        var resp = JSON.parse(xmlhttp.responseText);
-        console.log("Response Text: " + resp['task_id'] + " " + resp['date_done']);
-        var task_date = document.getElementById(resp['task_id']);
-        task_date.innerHTML = resp['date_done'];
-        }
-      }
-    function sendCheckBox(cb) {
-        console.log( cb.name + " Clicked, new value = " + cb.checked);
-        xmlhttp.open("POST", "/todo/status", true);
-        xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-        xmlhttp.send("id=" + cb.name + "&status=" + cb.checked);
-    }
-</script>
+<script src="/static/js/todo.js"></script>
 {% endblock %}
