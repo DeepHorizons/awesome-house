@@ -53,6 +53,7 @@ class Todo(BaseModel):
     task = peewee.CharField()
     done = peewee.BooleanField(default=False)
     deleted = peewee.BooleanField(default=False)
+    date_done = peewee.DateField(null=True, default=None)
 
 
 class Bill(BaseModel):

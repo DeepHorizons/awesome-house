@@ -10,6 +10,7 @@
                         <th>Event</th>
                         <th>Task</th>
                         <th>Done?</th>
+                        <th>Date Done</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -18,6 +19,7 @@
                         {% if todo.event %}<td>{{ todo.event.name }}</td>{% else %} <td></td>{% endif %}
                         <td>{{ todo.task }}</td>
                         <td><input type="checkbox" name="{{ todo.id }}" {% if todo.done %}checked{% endif %} onclick="testClick(this)">{{ todo.done }}</td>
+                        <td>{{ todo.date_done }}</td>
                     </tr>
                     {% else %}
                     <tr>
