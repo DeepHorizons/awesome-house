@@ -19,7 +19,7 @@ def index():
     tasks = models.Todo.select().where((models.Todo.event == None) & ((models.Todo.done == False) |
                                         (models.Todo.date_done > (datetime.date.today() - datetime.timedelta(days=7)))))
     nearing_events = models.Event.select().order_by(models.Event.date.asc()).where(models.Event.date.between(datetime.date.today(),
-                                                datetime.date.today() + datetime.timedelta(7)))
+                                                datetime.date.today() + datetime.timedelta(31)))
     return flask.render_template('index.html', title='Home', todos=tasks, events=nearing_events)
 
 
