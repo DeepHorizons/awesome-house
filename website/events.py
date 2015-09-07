@@ -6,6 +6,7 @@ Index for the website
 import flask
 import logging
 import datetime
+import peewee
 
 logger = logging.getLogger(__name__)
 
@@ -14,9 +15,14 @@ from __init__ import app
 import models
 
 
+def get_count(obj):
+    return obj.count()
+
+
 @app.route('/events')
 def events():
-    return flask.render_template('events.html', title='Events')
+    events = (models.Event.select(models.Event, models.Todo).join(models.Todo, peewee.JOIN.LEFT_OUTER).where(models.Event.date > datetime.date.today()))
+    return flask.render_template('events.html', title='Events', events=events, get_count=get_count)
 
 
 @app.route('/events/by-id/<int:event_id>')
@@ -25,10 +31,8 @@ def event_by_id(event_id):
     return event.name
 
 
-@app.route('/todo', methods=['GET', 'POST'])
+@app.route('/todos')
 def todo():
-    if flask.request.method == 'POST':
-        print('POST:', flask.request.form)
     todos = models.Todo.select()
     return flask.render_template('todo.html', title='Todo', todos=todos)
 

@@ -1,4 +1,47 @@
 {% extends "base.html" %}
 {% block body %}
-events
+<h2>Future events</h2>
+<br>
+{% for event in events %}
+    <h4>{{ event.name }} - <small>{{ event.date }}</small></h4>
+
+    <div class="row" style="padding-left: 1cm">
+        {% if get_count(event.todos) %}
+        <div class="col-md-5 col-sm-6 col-xs-12">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Task</th>
+                            <th>Done?</th>
+                            <th>Date Done</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for todo in event.todos %}
+                         <tr name="row_{{ todo.id }}" {% if todo.done %}class="strikeout"{% endif %}>
+                            <td><a href="/todo/by-id/{{ todo.id }}">{{ todo.task }}</a></td>
+                            <td><input type="checkbox" name="{{ todo.id }}" {% if todo.done %}checked{% endif %} onclick="sendCheckBox(this)"></td>
+                            <td><div id="{{ todo.id }}">{% if todo.date_done %}{{ todo.date_done }}{% endif %}</div></td>
+                        </tr>
+                    {% else %}
+                         No tasks
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% else %}
+            No Tasks
+        {% endif %}
+    </div>
+
+<br>
+{% else %}
+        No events
+{% endfor %}
+{% endblock %}
+
+{% block extrajs %}
+<script src="/static/js/todo.js"></script>
 {% endblock %}
