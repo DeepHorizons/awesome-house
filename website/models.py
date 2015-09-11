@@ -49,6 +49,18 @@ class Event(BaseModel):
     description = peewee.CharField()
 
 
+class Invitee(BaseModel):
+    name = peewee.CharField()
+    email = peewee.CharField()
+    phone_number = peewee.CharField(null=True, default=None)
+    # TODO Facebook?
+
+
+class EventInvitee(BaseModel):
+    event = peewee.ForeignKeyField(Event)
+    invitee = peewee.ForeignKeyField(Invitee)
+
+
 class Todo(BaseModel):
     event = peewee.ForeignKeyField(Event, related_name='todos', null=True)
     task = peewee.CharField()
