@@ -25,7 +25,7 @@
                     {% for event in events %}
                     <tr>
                         <td><a href="/events/by-id/{{ event.id }}">{{ event.name }}</a></td>
-                        <td>{{ event.date }}</td>
+                        <td>{{ event.date_time.date() }} @ {{ event.date_time.strftime("%I:%M %p") }}</td>
                     </tr>
                     {% else %}
                     <tr>

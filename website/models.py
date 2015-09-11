@@ -43,7 +43,7 @@ class Electricity(BaseModel):
 
 
 class Event(BaseModel):
-    date = peewee.DateField()
+    date_time = peewee.DateTimeField()
     name = peewee.CharField()
     deleted = peewee.BooleanField(default=False)
 
