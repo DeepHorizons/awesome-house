@@ -46,6 +46,7 @@ class Event(BaseModel):
     date_time = peewee.DateTimeField()
     name = peewee.CharField()
     deleted = peewee.BooleanField(default=False)
+    description = peewee.CharField()
 
 
 class Todo(BaseModel):
@@ -54,6 +55,7 @@ class Todo(BaseModel):
     done = peewee.BooleanField(default=False)
     deleted = peewee.BooleanField(default=False)
     date_done = peewee.DateField(null=True, default=None)
+    description = peewee.CharField(default="")
 
 
 class Bill(BaseModel):
