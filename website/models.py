@@ -203,6 +203,12 @@ if __name__ == '__main__':
              description="Event 3 task 1").save()
         Todo(task="Event3 task2",
              event=event_tomorrow_7).save()
+        Todo(task="Event3 task3",
+             event=event_tomorrow_7).save()
+        Todo(task="Event3 task4",
+             event=event_tomorrow_7).save()
+        Todo(task="Event3 task5",
+             event=event_tomorrow_7).save()
         Todo(task="Event yesterday task",
              event=event_yesterday).save()
 
