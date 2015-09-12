@@ -39,13 +39,13 @@ def todo():
     return flask.render_template('todo.html', title='Todo', todos=todos)
 
 
-@app.route('/todo/by-id/<int:todo_id>')
+@app.route('/todos/by-id/<int:todo_id>')
 def todo_by_id(todo_id):
     task = models.Todo.get(models.Todo.id == todo_id)
     return task.task
 
 
-@app.route('/todo/status', methods=['POST'])
+@app.route('/todos/status', methods=['POST'])
 def todo_status():
     """Ajax request"""
     try:

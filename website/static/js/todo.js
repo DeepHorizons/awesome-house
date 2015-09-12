@@ -4,10 +4,10 @@ xmlhttp.onreadystatechange=function()
   if (xmlhttp.readyState==4 && xmlhttp.status==200)
     {
         var resp = JSON.parse(xmlhttp.responseText);
-        var task_date = document.getElementById(resp['task_id']);
+        var task_date = document.getElementById('date_' + resp['task_id']);
         task_date.innerHTML = resp['date_done'];
 
-        var row = document.getElementsByName('row_' + resp['task_id'])[0];
+        var row = document.getElementById('row_' + resp['task_id']);
         if( row != null){
             if(resp['date_done'] != null){
                 row.className = "strikeout";
@@ -18,7 +18,7 @@ xmlhttp.onreadystatechange=function()
     }
   }
 function sendCheckBox(cb) {
-    xmlhttp.open("POST", "/todo/status", true);
+    xmlhttp.open("POST", "/todos/status", true);
     xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-    xmlhttp.send("id=" + cb.name + "&status=" + cb.checked);
+    xmlhttp.send("id=" + cb.getAttribute('data-id') + "&status=" + cb.checked);
 }
