@@ -51,7 +51,7 @@ class Event(BaseModel):
 
 class Invitee(BaseModel):
     name = peewee.CharField()
-    email = peewee.CharField()
+    email = peewee.CharField(unique=True)
     phone_number = peewee.CharField(null=True, default=None)
     # TODO Facebook?
 
@@ -169,7 +169,7 @@ if __name__ == '__main__':
                 email="example@hotmail.com",
                 phone_number="1-234-567-8901").save()
         Invitee(name="Test person 3",
-                email="dfgdfgdfg",
+                email="e2@www.org",
                 phone_number="741-2589").save()
 
         # -----EventInvitee-----
