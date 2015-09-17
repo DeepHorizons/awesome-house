@@ -76,6 +76,13 @@ class Bill(BaseModel):
     amount = peewee.FloatField()
 
 
+class User(Invitee):
+    login_name = peewee.CharField(unique=True)
+    password = peewee.FixedCharField(max_length=64)
+    salt = peewee.FixedCharField(max_length=32)
+    email_me = peewee.BooleanField(default=True)
+
+
 # -----------Helper functions-----------
 def before_request_handler(database=db):
     logger.debug('Opening connection to DB')
@@ -99,7 +106,7 @@ atexit.register(after_request_handler, db)
 
 def create_tables():
     before_request_handler(db)
-    db.create_tables([Electricity, Event, Todo, Bill, Invitee, EventInvitee], True)
+    db.create_tables([Electricity, Event, Todo, Bill, Invitee, EventInvitee, User], True)
     return
 
 
@@ -222,5 +229,36 @@ if __name__ == '__main__':
         Bill(due=datetime.date.today() - datetime.timedelta(3),
              name="Past Bill",
              amount="123").save()
+
+        # -----User-----
+        import os
+        import hashlib
+        import base64
+        salt = base64.b64encode(os.urandom(32))
+        password = hashlib.sha256('password1'.encode() + salt).hexdigest()
+        User(name='User 1',
+             login_name='user1',
+             salt=salt.decode(),
+             password=password,
+             email_me=False,
+             email="test@test.info").save()
+        salt = base64.b64encode(os.urandom(32))
+        password = hashlib.sha256('password2'.encode() + salt).hexdigest()
+        User(name='User 2',
+             login_name='user2',
+             salt=salt.decode(),
+             password=password,
+             email_me=False,
+             email="test2@test.info",
+             phone_number='234-5678').save()
+        salt = base64.b64encode(os.urandom(32))
+        password = hashlib.sha256('password3'.encode() + salt).hexdigest()
+        User(name='User 3',
+             login_name='user3',
+             salt=salt.decode(),
+             password=password,
+             email_me=False,
+             email="test3@test.moe",
+             phone_number='234-5678').save()
 
         return

@@ -31,6 +31,32 @@
                     <li><a href="/music">Music</a></li>
                     <li><a href="/bills">Bills</a></li>
                 </ul>
+                {% if current_user.is_authenticated %}
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{ current_user.name }}<span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#">Settings</a></li>
+                            <li><a href="/logout">Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                {% else %}
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Login<span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <form class="navbar-form navbar-left" action="/login/check" method="post">
+                                <div class="form-group">
+                                    <input name="username" type="text" class="form-control" placeholder="Username">
+                                    <input name="password" type="password" class="form-control" placeholder="Password">
+                                </div>
+                                <button type="submit" class="btn btn-default">Login</button>
+                                <input type="button" onclick="location.href='/login';" class="btn btn-default" value="Register" />
+                            </form>
+
+                        </ul>
+                    </li>
+                </ul>
+                {% endif %}
             </div>
         </div>
     </nav>
