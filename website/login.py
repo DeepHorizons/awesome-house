@@ -34,6 +34,7 @@ class User(flask.ext.login.UserMixin):
             self.email = user.email
             self.password = user.password
             self.salt = user.salt
+            self.phone_number = user.phone_number
         return
 
     @classmethod
@@ -48,7 +49,7 @@ class User(flask.ext.login.UserMixin):
 def load_user(login_name):
     return User.get(login_name)
 
-
+# TODO make this the registration page
 @app.route('/login')
 def login():
     return '''
@@ -83,4 +84,22 @@ def logout():
     if flask.ext.login.current_user.is_authenticated:
         flask.ext.login.logout_user()
         flask.flash('Successfully logged out', category='success')
+    return flask.redirect(flask.url_for('index'))
+
+
+@app.route('/login/settings', methods=['GET', 'POST'])
+def login_settings():
+    if flask.ext.login.current_user.is_authenticated:
+        print(flask.request.method)
+        if flask.request.method == 'POST':
+            print(flask.request.form)
+            name = flask.request.form['name']
+            email = flask.request.form['email']
+            phone_number = flask.request.form['phone_number']
+            email_me = 'email_me' in flask.request.form
+            print('Name: {} email: {} Phone: {} email me?: {}'.format(name, email, phone_number, email_me))
+            flask.flash('Settings changed successfully', 'success')
+            return flask.redirect('/login/settings')
+        flask.flash('Phone number currently does nothing')  # TODO fix this
+        return flask.render_template('settings.html')
     return flask.redirect(flask.url_for('index'))
