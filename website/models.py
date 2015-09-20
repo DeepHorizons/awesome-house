@@ -15,7 +15,6 @@ if __name__ != '__main__':
         DB_PATH = './website/{0}'.format(app.config['DB_NAME'])
     else:
         logger.critical('database could not be located')
-        # exit()
 else:
     DB_PATH = './{0}'.format(app.config['DB_NAME'])
 
@@ -257,7 +256,7 @@ if __name__ == '__main__':
              login_name='user3',
              salt=salt.decode(),
              password=password,
-             email_me=False,
+             email_me=True,
              email="test3@test.moe",
              phone_number='234-5678').save()
 
