@@ -37,7 +37,7 @@
 
 
             {{ form.email_me.label }}:
-            {{ form.email_me() }}
+            {% if email_me %}{{ form.email_me(checked='checked') }}{% else %}{{ form.email_me() }}{% endif %}
             
 
             <!-- TODO add password changer -->

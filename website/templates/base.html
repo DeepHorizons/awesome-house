@@ -44,15 +44,20 @@
                 <ul class="nav navbar-nav navbar-right">
                     <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Login<span class="caret"></span></a>
                         <ul class="dropdown-menu">
-                            <form class="navbar-form navbar-left" action="/login/check" method="post">
+                            <form class="navbar-form" action="/login/check" method="post">
+                                {{ g.login_form.hidden_tag() }}
+
                                 <div class="form-group">
-                                    <input name="username" type="text" class="form-control" placeholder="Username">
-                                    <input name="password" type="password" class="form-control" placeholder="Password">
+                                    {{ g.login_form.username(class='form-control', placeholder="Username") }}
                                 </div>
+
+                                <div class="form-group">
+                                    {{ g.login_form.password(class='form-control', placeholder="Password") }}
+                                </div>
+
                                 <button type="submit" class="btn btn-default">Login</button>
                                 <input type="button" onclick="location.href='/login';" class="btn btn-default" value="Register" />
                             </form>
-
                         </ul>
                     </li>
                 </ul>
