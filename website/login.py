@@ -161,18 +161,14 @@ def login_settings():
                 # Form not valid
                 logger.debug('Invalid form data')
                 flask.flash('Invalid data submitted', category='danger')
-                name = form.name.data
-                email = form.email.data
-                phone_number = form.phone_number.data
-                email_me = form.email_me.data
         elif flask.request.method == 'GET':
-            name = flask_login.current_user.name
-            email = flask_login.current_user.email
-            phone_number = flask_login.current_user.phone_number
-            email_me = flask_login.current_user.email_me
+            form.name.data = flask_login.current_user.name
+            form.email.data = flask_login.current_user.email
+            form.phone_number.data = flask_login.current_user.phone_number
+            form.email_me.data = flask_login.current_user.email_me
 
         flask.flash('Phone number currently does nothing')  # TODO fix this
-        return flask.render_template('settings.html', form=form, name=name, email=email, phone_number=phone_number, email_me=email_me)
+        return flask.render_template('settings.html', form=form)
     return flask.redirect(flask.url_for('index'))
 
 

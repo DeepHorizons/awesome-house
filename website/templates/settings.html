@@ -1,5 +1,16 @@
 {% extends "base.html" %}
 
+{% macro gen_group(group, name='', placeholder='') %}
+    <div class="form-group {% if group.errors %}has-error{% endif %}">
+        {%- for error in group.errors %}
+        <label class="control-label">{{ error }}</label>
+        {%- else %}
+        {% if name %}{{ group.label(name) }}{% else %}{{ group.label() }}{% endif %}
+        {%- endfor %}
+        {{ group(class='form-control', placeholder=placeholder) }}
+    </div>
+{% endmacro %}
+
 {% block body %}
 <div class="row>">
     <div class="col-sm-6">
@@ -7,37 +18,14 @@
         <form class="form-group" action="/login/settings" method="POST">
             {{ form.hidden_tag() }}
 
-            <div class="form-group {% if form.name.errors %}has-error{% endif %}">
-                {%- for error in form.name.errors %}
-                <label class="control-label">{{ error }}</label>
-                {%- else %}
-                {{ form.name.label('Name') }}
-                {%- endfor %}
-                {{ form.name(class='form-control', placeholder='Drew', value=name) }}
-            </div>
+            {{ gen_group(form.name, 'Name', 'Drew') }}
 
-            <div class="form-group {% if form.email.errors %}has-error{% endif %}">
+            {{ gen_group(form.email, 'Email', '123@abc.com') }}
 
-                {%- for error in form.email.errors %}
-                <label class="control-label">{{ error }}</label>
-                {%- else %}
-                {{ form.email.label('Email') }}
-                {%- endfor %}
-                {{ form.email(class='form-control', placeholder='123@abc.com', value=email) }}
-            </div>
+            {{ gen_group(form.phone_number, 'Phone Number', '123-456-7890') }}
 
-            <div class="form-group {% if form.phone_number.errors %}has-error{% endif %}">
-                {%- for error in form.phone_number.errors %}
-                <label class="control-label">{{ error }}</label>
-                {%- else %}
-                {{ form.phone_number.label }}
-                {%- endfor %}
-                {{ form.phone_number(class='form-control', placeholder='123-456-7890', value=phone_number if phone_number else '') }}
-            </div>
-
-
-            {{ form.email_me.label }}:
-            {% if email_me %}{{ form.email_me(checked='checked') }}{% else %}{{ form.email_me() }}{% endif %}
+            {{ form.email_me.label() }}:
+            {{ form.email_me() }}
             
 
             <!-- TODO add password changer -->
