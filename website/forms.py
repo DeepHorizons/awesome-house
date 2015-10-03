@@ -31,3 +31,7 @@ class SettingsForm(flask_wtf.Form):
 class LoginForm(flask_wtf.Form):
     username = wtforms.StringField('username', [wtforms.validators.Length(max=255), wtforms.validators.DataRequired()])
     password = wtforms.PasswordField('password', [wtforms.validators.Length(max=255), wtforms.validators.DataRequired()])
+
+
+class RegisterForm(SettingsForm, LoginForm):
+    pass

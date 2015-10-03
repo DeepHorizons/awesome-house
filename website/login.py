@@ -8,6 +8,8 @@ import logging
 import flask_login
 import peewee
 import hashlib
+import os
+import base64
 
 logger = logging.getLogger(__name__)
 
@@ -146,3 +148,49 @@ def login_settings():
         flask.flash('Phone number currently does nothing')  # TODO fix this
         return flask.render_template('settings.html', form=form, name=name, email=email, phone_number=phone_number, email_me=email_me)
     return flask.redirect(flask.url_for('index'))
+
+
+@app.route('/login/register', methods=['GET', 'POST'])
+def login_register():
+    if not flask_login.current_user.is_authenticated:
+        form = forms.RegisterForm()
+        if flask.request.method == 'POST':
+            if form.validate_on_submit():
+                login_name = form.login_name.data
+                password = form.password.data
+                name = form.name.data
+                email = form.email.data
+                phone_number = form.phone_number.data
+                email_me = form.email_me.data
+
+                logger.debug('Registering new user: Login name: {} |Password: {}|Name: {} |email: {} |Phone: {} |email me?: {}'.format(login_name, password, name, email, phone_number, email_me))  # TODO records password in log, remove this
+
+                # Password
+                salt = base64.b64encode(os.urandom(32)).decode()
+                password = hashlib.sha256(password.encode() + salt.encode()).hexdigest()
+                logger.debug('pass hash is {}'.format(password))
+
+                try:
+                    models.User(name=name,
+                                login_name=login_name,
+                                salt=salt,
+                                password=password,
+                                email_me=email_me,
+                                email=email).save()
+                except peewee.IntegrityError as e:
+                    logger.debug(e)
+                    problem_field = str(e)[str(e).find('.')+1:]
+
+                    if problem_field in form.__dict__:
+                        logger.debug('Problem was {}'.format(problem_field))
+                        getattr(form, problem_field).errors.append('This entry already exists, please choose a new one')
+                    else:
+                        raise e
+                else:
+                    flask.flash('Successfully made account', category='success')
+                    return flask.redirect(flask.url_for('index'))
+        elif flask.request.method == 'GET':
+            flask.flash('Phone number currently does nothing')  # TODO fix this
+        return flask.render_template('register.html', form=form)
+    else:  # The user is authenticated
+        return flask.redirect(flask.url_for('index'))
