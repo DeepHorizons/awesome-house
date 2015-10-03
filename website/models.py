@@ -84,6 +84,11 @@ class User(Invitee):
     admin = peewee.BooleanField(default=False)
 
 
+class EventUser(BaseModel):
+    event = peewee.ForeignKeyField(Event)
+    invitee = peewee.ForeignKeyField(User)
+
+
 # -----------Helper functions-----------
 def before_request_handler(database=db):
     logger.debug('Opening connection to DB')
@@ -278,5 +283,10 @@ if __name__ == '__main__':
                       email="test4@test.moe",
                       authorized=False)
         user_4.save()
+
+        # -----EventUser-----
+        EventUser(event=event_today, invitee=user_3).save()
+        EventUser(event=event_tomorrow_7, invitee=user_2).save()
+        EventUser(event=event_yesterday, invitee=user_1).save()
 
         return
