@@ -22,15 +22,15 @@ def phone_number_validator(form, field):
 
 
 class SettingsForm(flask_wtf.Form):
-    name = wtforms.StringField('name', [wtforms.validators.Length(max=255), wtforms.validators.DataRequired()])
-    email = wtforms.StringField('email', [wtforms.validators.Length(max=255), wtforms.validators.Email(), wtforms.validators.DataRequired()])
+    name = wtforms.StringField('name', [wtforms.validators.Length(max=32), wtforms.validators.DataRequired()])
+    email = wtforms.StringField('email', [wtforms.validators.Length(max=64), wtforms.validators.Email(), wtforms.validators.DataRequired()])
     phone_number = wtforms.StringField('phone number', [wtforms.validators.Optional(), phone_number_validator])
     email_me = wtforms.BooleanField()
 
 
 class LoginForm(flask_wtf.Form):
-    username = wtforms.StringField('username', [wtforms.validators.Length(max=255), wtforms.validators.DataRequired()])
-    password = wtforms.PasswordField('password', [wtforms.validators.Length(max=255), wtforms.validators.DataRequired()])
+    login_name = wtforms.StringField('username', [wtforms.validators.Length(max=64), wtforms.validators.DataRequired()])
+    password = wtforms.PasswordField('password', [wtforms.validators.Length(max=64), wtforms.validators.DataRequired()])
 
 
 class RegisterForm(SettingsForm, LoginForm):

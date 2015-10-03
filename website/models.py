@@ -49,8 +49,8 @@ class Event(BaseModel):
 
 
 class Invitee(BaseModel):
-    name = peewee.CharField()
-    email = peewee.CharField(unique=True)
+    name = peewee.CharField(max_length=32)
+    email = peewee.CharField(unique=True, max_length=64)
     phone_number = peewee.CharField(null=True, default=None)
     # TODO Facebook?
 
@@ -76,7 +76,7 @@ class Bill(BaseModel):
 
 
 class User(Invitee):
-    login_name = peewee.CharField(unique=True)
+    login_name = peewee.CharField(unique=True, max_length=64)
     password = peewee.FixedCharField(max_length=64)
     salt = peewee.FixedCharField(max_length=32)
     email_me = peewee.BooleanField(default=True)
