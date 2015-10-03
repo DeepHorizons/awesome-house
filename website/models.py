@@ -169,21 +169,24 @@ if __name__ == '__main__':
               description="8 days ago @ 2 PM").save()
 
         # -----Invitee-----
-        Invitee(name="Test person 1",
-                email="abc@123.com").save()
-        Invitee(name="Test person 2",
+        invitee_1 = Invitee(name="Test person 1",
+                email="abc@123.com")
+        invitee_1.save()
+        invitee_2 = Invitee(name="Test person 2",
                 email="example@hotmail.com",
-                phone_number="1-234-567-8901").save()
-        Invitee(name="Test person 3",
+                phone_number="1-234-567-8901")
+        invitee_2.save()
+        invitee_3 = Invitee(name="Test person 3",
                 email="e2@www.org",
-                phone_number="741-2589").save()
+                phone_number="741-2589")
+        invitee_3.save()
 
         # -----EventInvitee-----
-        EventInvitee(event=event_today, invitee=1).save()
-        EventInvitee(event=event_tomorrow_7, invitee=1).save()
-        EventInvitee(event=event_tomorrow_7, invitee=2).save()
-        EventInvitee(event=event_tomorrow_7, invitee=3).save()
-        EventInvitee(event=event_yesterday, invitee=3).save()
+        EventInvitee(event=event_today, invitee=invitee_1).save()
+        EventInvitee(event=event_tomorrow_7, invitee=invitee_1).save()
+        EventInvitee(event=event_tomorrow_7, invitee=invitee_2).save()
+        EventInvitee(event=event_tomorrow_7, invitee=invitee_3).save()
+        EventInvitee(event=event_yesterday, invitee=invitee_3).save()
 
         # -----Todos-----
         Todo(task="Non event task 1").save()
