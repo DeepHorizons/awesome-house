@@ -71,8 +71,8 @@ def login_check():
 
     form = forms.LoginForm(prefix='login_')
     if form.validate_on_submit():
-        username = form.username.data
-        user = User.get(username)
+        login_name = form.login_name.data
+        user = User.get(login_name)
         if user:
             password = form.password.data
             password = hashlib.sha256(password.encode() + user.salt.encode()).hexdigest()
