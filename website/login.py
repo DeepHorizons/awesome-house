@@ -23,6 +23,10 @@ login_manager.init_app(app)
 
 
 class User(flask_login.UserMixin):
+    """ This is the user class that is used for Flask-Login
+    It should have all the properties of the User class in
+    models.py
+    """
     def __init__(self, login_name):
         try:
             user = models.User.get(models.User.login_name == login_name)
@@ -112,6 +116,14 @@ def logout():
 
 
 def format_phone_number(phone_number):
+    """
+    Takes in a phone number and formats it with hyphens
+    Can accept 10 or 11 digit numbers
+    TODO make the formatter accept different types of numbers
+
+    :param phone_number: string of a US phone number
+    :return: a string of a properly formated number
+    """
     phone_number = phone_number.replace('-', '')
     phone_number = phone_number.replace(' ', '')
     if len(phone_number) == 10:
