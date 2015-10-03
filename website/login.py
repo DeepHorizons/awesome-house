@@ -38,6 +38,8 @@ class User(flask_login.UserMixin):
             self.password = user.password
             self.salt = user.salt
             self.phone_number = user.phone_number
+            self.authorized = user.authorized
+            self.admin = user.admin
         return
 
     @classmethod
@@ -46,6 +48,14 @@ class User(flask_login.UserMixin):
             return cls(login_name)
         except LookupError:
             return None
+
+    @property
+    def is_admin(self):
+        return self.admin
+
+    @property
+    def is_authorized(self):
+        return self.authorized
 
 
 @login_manager.user_loader

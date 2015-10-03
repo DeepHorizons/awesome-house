@@ -80,6 +80,8 @@ class User(Invitee):
     password = peewee.FixedCharField(max_length=64)
     salt = peewee.FixedCharField(max_length=32)
     email_me = peewee.BooleanField(default=True)
+    authorized = peewee.BooleanField(default=False)
+    admin = peewee.BooleanField(default=False)
 
 
 # -----------Helper functions-----------
@@ -235,29 +237,46 @@ if __name__ == '__main__':
         import base64
         salt = base64.b64encode(os.urandom(32))
         password = hashlib.sha256('password1'.encode() + salt).hexdigest()
-        User(name='User 1',
-             login_name='user1',
-             salt=salt.decode(),
-             password=password,
-             email_me=False,
-             email="test@test.info").save()
+        user_1 = User(name='User 1',
+                      login_name='user1',
+                      salt=salt.decode(),
+                      password=password,
+                      email_me=False,
+                      email="test@test.info",
+                      authorized=True,
+                      admin=True)
+        user_1.save()
         salt = base64.b64encode(os.urandom(32))
         password = hashlib.sha256('password2'.encode() + salt).hexdigest()
-        User(name='User 2',
-             login_name='user2',
-             salt=salt.decode(),
-             password=password,
-             email_me=False,
-             email="test2@test.info",
-             phone_number='234-5678').save()
+        user_2 = User(name='User 2',
+                      login_name='user2',
+                      salt=salt.decode(),
+                      password=password,
+                      email_me=False,
+                      email="test2@test.info",
+                      phone_number='234-5678',
+                      authorized=True)
+        user_2.save()
         salt = base64.b64encode(os.urandom(32))
         password = hashlib.sha256('password3'.encode() + salt).hexdigest()
-        User(name='User 3',
-             login_name='user3',
-             salt=salt.decode(),
-             password=password,
-             email_me=True,
-             email="test3@test.moe",
-             phone_number='234-5678').save()
+        user_3 = User(name='User 3',
+                      login_name='user3',
+                      salt=salt.decode(),
+                      password=password,
+                      email_me=True,
+                      email="test3@test.moe",
+                      phone_number='234-5678',
+                      authorized=True)
+        user_3.save()
+        salt = base64.b64encode(os.urandom(32))
+        password = hashlib.sha256('password4'.encode() + salt).hexdigest()
+        user_4 = User(name='User 4',
+                      login_name='user4',
+                      salt=salt.decode(),
+                      password=password,
+                      email_me=True,
+                      email="test4@test.moe",
+                      authorized=False)
+        user_4.save()
 
         return
