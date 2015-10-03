@@ -29,7 +29,7 @@ def index():
 def before_request():
     flask.g.db = models.db
     if not flask_login.current_user.is_authenticated:
-        flask.g.login_form = forms.LoginForm()
+        flask.g.login_form = forms.LoginForm(prefix='login_')
     models.before_request_handler(flask.g.db)
     return
 

@@ -67,7 +67,7 @@ def login():
 def login_check():
     flask_error_message = "Username or password incorrect"
 
-    form = forms.LoginForm()
+    form = forms.LoginForm(prefix='login_')
     if form.validate_on_submit():
         username = form.username.data
         user = User.get(username)
