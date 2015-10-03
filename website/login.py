@@ -84,13 +84,17 @@ def login_check():
         login_name = form.login_name.data
         user = User.get(login_name)
         if user:
-            password = form.password.data
-            password = hashlib.sha256(password.encode() + user.salt.encode()).hexdigest()
-            if password == user.password:
-                flask_login.login_user(user)
-                flask.flash('Successfully logged in', category='success')
+            if user.is_authorized:
+                password = form.password.data
+                password = hashlib.sha256(password.encode() + user.salt.encode()).hexdigest()
+                if password == user.password:
+                    flask_login.login_user(user)
+                    logger.debug('Successfully logged in user {}'.format(login_name))
+                    flask.flash('Successfully logged in', category='success')
+                else:
+                    flask.flash(flask_error_message, category='danger')
             else:
-                flask.flash(flask_error_message, category='danger')
+                flask.flash('Your account has not yet been authorized. Please bug someone about it.')
         else:
             flask.flash(flask_error_message, category='danger')
     else:
