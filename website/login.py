@@ -216,3 +216,44 @@ def login_register():
         return flask.render_template('register.html', form=form)
     else:  # The user is authenticated
         return flask.redirect(flask.url_for('index'))
+
+
+@app.route('/login/admin', methods=['GET', 'POST'])
+def login_admin():
+    if flask_login.current_user.is_admin:
+        if flask.request.method == 'POST':
+            form = forms.UserForm()
+            if form.validate_on_submit():
+                # Authorization
+                # Get all form data about authorization
+                authorized_list = [i for i in flask.request.form if 'authorized' in i]
+                authorized_list_ids = []  # temp list for the id's in the list
+                for i in authorized_list:
+                    user_id = i[:i.find('_')]
+                    authorized_list_ids.append(user_id)
+
+                # Update Authorized list
+                models.User.update(authorized=True).where(models.User.id.in_(authorized_list_ids)).execute()
+                models.User.update(authorized=False).where(models.User.id.not_in(authorized_list_ids) &
+                                                           (models.User.admin == False)).execute()
+
+                logger.debug('{} updated the authorized list;\n{} authorized'.format(flask_login.current_user.name,
+                                                                                     authorized_list_ids))
+                flask.flash('Users statuses changed', category='success')
+            else:
+                logger.debug('Error on Admin form;\n {}'.format(form.errors))
+            flask.redirect(flask.url_for('login/admin'))
+
+        # On other requests
+        users = models.User.select().order_by(models.User.authorized).dicts()
+        users_forms = [forms.UserForm()]
+        for user in users:
+            tmpForm = forms.UserForm(None, prefix=str(user['id'])+'_')  # Adds <id>_ to all data for later retrieval
+            for field in tmpForm:
+                field.data = user.get(field.name[field.name.find('_')+1:])  # Get properties off of the user
+            users_forms.append(tmpForm)
+
+        return flask.render_template('admin.html', forms=users_forms)
+
+    else:  # The user is not an admin
+        return flask.redirect(flask.url_for('index'))

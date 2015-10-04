@@ -41,3 +41,11 @@ class LoginForm(flask_wtf.Form):
 
 class RegisterForm(SettingsForm, LoginForm):
     pass
+
+
+class UserForm(flask_wtf.Form):
+    """ Used for the admin page
+    """
+    name = wtforms.StringField(description='The name you prefer to go by')
+    admin = wtforms.BooleanField(description='Is the user an admin?')
+    authorized = wtforms.BooleanField(description='Is the user authorized?')
