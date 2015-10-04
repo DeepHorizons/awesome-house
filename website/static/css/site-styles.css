@@ -1,8 +1,17 @@
 /* Site specific styles to overwrite the bootstrap ones */
 
 body {
-  background:#F5F5F5;
+  /* background:#F5F5F5; */
+  background: linear-gradient(#FFFFFF, #D6EBFF); /* Standard syntax */
   /* padding-top: 70px; *//* Add this if the navbar is fixed to top */
+  height: 100%;
+  margin: 0;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+html {
+    height: 100%;
 }
 
 .table-hover tbody tr:hover td, .table-hover tbody tr:hover th {

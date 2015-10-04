@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
-{% macro gen_group(group, name='', placeholder='') %}
+{% macro gen_group(group, placeholder='', name='') %}
     <div class="form-group {% if group.errors %}has-error{% endif %}">
         {%- for error in group.errors %}
         <label class="control-label">{{ error }}</label>
         {%- else %}
         {% if name %}{{ group.label(name) }}{% else %}{{ group.label() }}{% endif %}
         {%- endfor %}
-        {{ group(class='form-control', placeholder=placeholder) }}
+        {% if placeholder %}{{ group(class='form-control', placeholder=placeholder) }}{% else %}{{ group(class='form-control') }}{% endif %}
     </div>
 {% endmacro %}
 
@@ -18,11 +18,11 @@
         <form class="form-group" action="/login/settings" method="POST">
             {{ form.hidden_tag() }}
 
-            {{ gen_group(form.name, 'Name', 'Drew') }}
+            {{ gen_group(form.name, 'Drew') }}
 
-            {{ gen_group(form.email, 'Email', '123@abc.com') }}
+            {{ gen_group(form.email, '123@abc.com') }}
 
-            {{ gen_group(form.phone_number, 'Phone Number', '123-456-7890') }}
+            {{ gen_group(form.phone_number, '123-456-7890') }}
 
             {{ form.email_me.label() }}:
             {{ form.email_me() }}
@@ -37,10 +37,9 @@
     </div>
     <br>
     <div class="col-sm-6">
-        Name: The name you prefer to go by<br>
-        Email: This is the email you will recieve notifications to<br>
-        Phone Number: This is the phone number you will receive reminders to<br>
-        Email me for notifications: Do you want to receive emails?
+        {% for field in form %}
+        {% if field.description %}{{ field.label()}}: {{ field.description }}<br>{% endif %}
+        {% endfor %}
     </div>
 </div>
 
