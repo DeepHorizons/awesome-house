@@ -7,6 +7,7 @@ import flask
 import logging
 import datetime
 import peewee
+import flask_login
 
 logger = logging.getLogger(__name__)
 
@@ -46,6 +47,7 @@ def todo_by_id(todo_id):
 
 
 @app.route('/todos/status', methods=['POST'])
+@flask_login.login_required
 def todo_status():
     """Ajax request"""
     try:

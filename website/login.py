@@ -135,41 +135,40 @@ def format_phone_number(phone_number):
 
 
 @app.route('/login/settings', methods=['GET', 'POST'])
+@flask_login.login_required
 def login_settings():
-    if flask_login.current_user.is_authenticated:
-        form = forms.SettingsForm()
-        if flask.request.method == 'POST':
-            if form.validate_on_submit():
-                name = form.name.data
-                email = form.email.data
-                phone_number = form.phone_number.data
-                phone_number = format_phone_number(phone_number or '')
-                email_me = form.email_me.data
+    form = forms.SettingsForm()
+    if flask.request.method == 'POST':
+        if form.validate_on_submit():
+            name = form.name.data
+            email = form.email.data
+            phone_number = form.phone_number.data
+            phone_number = format_phone_number(phone_number or '')
+            email_me = form.email_me.data
 
-                logger.debug('Updating user settings: Login name: {} |Name: {} |email: {} |Phone: {} |email me?: {}'.format(flask_login.current_user.login_name, name, email, phone_number, email_me))
+            logger.debug('Updating user settings: Login name: {} |Name: {} |email: {} |Phone: {} |email me?: {}'.format(flask_login.current_user.login_name, name, email, phone_number, email_me))
 
-                user = models.User.get(models.User.login_name == flask_login.current_user.login_name)
-                user.name = name
-                user.email = email
-                user.phone_number = format_phone_number(phone_number)
-                user.email_me = email_me
-                user.save()
+            user = models.User.get(models.User.login_name == flask_login.current_user.login_name)
+            user.name = name
+            user.email = email
+            user.phone_number = format_phone_number(phone_number)
+            user.email_me = email_me
+            user.save()
 
-                flask.flash('Settings changed successfully', 'success')
-                return flask.redirect('/login/settings')
-            else:
-                # Form not valid
-                logger.debug('Invalid form data')
-                flask.flash('Invalid data submitted', category='danger')
-        elif flask.request.method == 'GET':
-            form.name.data = flask_login.current_user.name
-            form.email.data = flask_login.current_user.email
-            form.phone_number.data = flask_login.current_user.phone_number
-            form.email_me.data = flask_login.current_user.email_me
+            flask.flash('Settings changed successfully', 'success')
+            return flask.redirect('/login/settings')
+        else:
+            # Form not valid
+            logger.debug('Invalid form data')
+            flask.flash('Invalid data submitted', category='danger')
+    elif flask.request.method == 'GET':
+        form.name.data = flask_login.current_user.name
+        form.email.data = flask_login.current_user.email
+        form.phone_number.data = flask_login.current_user.phone_number
+        form.email_me.data = flask_login.current_user.email_me
 
-        flask.flash('Phone number currently does nothing')  # TODO fix this
-        return flask.render_template('settings.html', form=form)
-    return flask.redirect(flask.url_for('index'))
+    flask.flash('Phone number currently does nothing')  # TODO fix this
+    return flask.render_template('settings.html', form=form)
 
 
 @app.route('/login/register', methods=['GET', 'POST'])
@@ -219,6 +218,7 @@ def login_register():
 
 
 @app.route('/login/admin', methods=['GET', 'POST'])
+@flask_login.login_required
 def login_admin():
     if flask_login.current_user.is_admin:
         if flask.request.method == 'POST':
@@ -242,7 +242,7 @@ def login_admin():
                 flask.flash('Users statuses changed', category='success')
             else:
                 logger.debug('Error on Admin form;\n {}'.format(form.errors))
-            flask.redirect(flask.url_for('login/admin'))
+            flask.redirect(login_admin)
 
         # On other requests
         users = models.User.select().order_by(models.User.authorized).dicts()
