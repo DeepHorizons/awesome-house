@@ -18,7 +18,9 @@ xmlhttp.onreadystatechange=function()
     }
   }
 function sendCheckBox(cb) {
+    var csrftoken = $('meta[name=csrf-token]').attr('content')
     xmlhttp.open("POST", "/todos/status", true);
-    xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+    xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xmlhttp.setRequestHeader("X-CSRFToken", csrftoken);
     xmlhttp.send("id=" + cb.getAttribute('data-id') + "&status=" + cb.checked);
 }

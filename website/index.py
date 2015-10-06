@@ -6,12 +6,14 @@ Index for the website
 import flask
 import logging
 import datetime
+import flask_login
 
 logger = logging.getLogger(__name__)
 
 # Local imports
 from __init__ import app
 import models
+import forms
 
 
 @app.route('/')
@@ -26,6 +28,8 @@ def index():
 @app.before_request
 def before_request():
     flask.g.db = models.db
+    if not flask_login.current_user.is_authenticated:
+        flask.g.login_form = forms.LoginForm(prefix='login_')
     models.before_request_handler(flask.g.db)
     return
 

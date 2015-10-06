@@ -9,6 +9,11 @@
     <link rel="stylesheet" type="text/css" href="/static/css/bootstrap.css">
     <link rel="stylesheet" type="text/css" href="/static/css/bootstrap-theme.css">
     <link rel="stylesheet" type="text/css" href="/static/css/site-styles.css">
+
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    {% block extra_header %}
+    {% endblock %}
 </head>
 <body>
     <!-- Navbar -->
@@ -31,6 +36,38 @@
                     <li><a href="/music">Music</a></li>
                     <li><a href="/bills">Bills</a></li>
                 </ul>
+                {% if current_user.is_authenticated %}
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{ current_user.name }}<span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="/login/settings">Settings</a></li>
+                            {% if current_user.is_admin %}<li><a href="/login/admin">Admin</a></li>{% endif %}
+                            <li><a href="/logout">Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                {% else %}
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Login<span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <form class="navbar-form" action="/login/check" method="post">
+                                {{ g.login_form.hidden_tag() }}
+
+                                <div class="form-group">
+                                    {{ g.login_form.login_name(class='form-control', placeholder="Username") }}
+                                </div>
+
+                                <div class="form-group">
+                                    {{ g.login_form.password(class='form-control', placeholder="Password") }}
+                                </div>
+
+                                <button type="submit" class="btn btn-default">Login</button>
+                                <input type="button" onclick="location.href='/login/register';" class="btn btn-default" value="Register" />
+                            </form>
+                        </ul>
+                    </li>
+                </ul>
+                {% endif %}
             </div>
         </div>
     </nav>
@@ -40,9 +77,15 @@
         {% if messages %}
             {% for category, message in messages %}
                 {% if category == 'message' %}
-                    <div class="alert alert-warning alert-dismissible" role="alert">{{ message }}</div>
+                    <div class="alert alert-warning alert-dismissible" role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        {{ message }}
+                    </div>
                 {% else %}
-                    <div class="alert alert-{{ category }} alert-dismissible" role="alert">{{ message }}</div>
+                    <div class="alert alert-{{ category }} alert-dismissible" role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        {{ message }}
+                    </div>
                 {% endif %}
             {% endfor %}
         {% endif %}

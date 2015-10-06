@@ -15,7 +15,6 @@ if __name__ != '__main__':
         DB_PATH = './website/{0}'.format(app.config['DB_NAME'])
     else:
         logger.critical('database could not be located')
-        # exit()
 else:
     DB_PATH = './{0}'.format(app.config['DB_NAME'])
 
@@ -50,8 +49,8 @@ class Event(BaseModel):
 
 
 class Invitee(BaseModel):
-    name = peewee.CharField()
-    email = peewee.CharField()
+    name = peewee.CharField(max_length=32)
+    email = peewee.CharField(unique=True, max_length=64)
     phone_number = peewee.CharField(null=True, default=None)
     # TODO Facebook?
 
@@ -74,6 +73,20 @@ class Bill(BaseModel):
     due = peewee.DateField()
     name = peewee.CharField()
     amount = peewee.FloatField()
+
+
+class User(Invitee):
+    login_name = peewee.CharField(unique=True, max_length=64)
+    password = peewee.FixedCharField(max_length=64)
+    salt = peewee.FixedCharField(max_length=32)
+    email_me = peewee.BooleanField(default=True)
+    authorized = peewee.BooleanField(default=False)
+    admin = peewee.BooleanField(default=False)
+
+
+class EventUser(BaseModel):
+    event = peewee.ForeignKeyField(Event)
+    invitee = peewee.ForeignKeyField(User)
 
 
 # -----------Helper functions-----------
@@ -99,7 +112,7 @@ atexit.register(after_request_handler, db)
 
 def create_tables():
     before_request_handler(db)
-    db.create_tables([Electricity, Event, Todo, Bill, Invitee, EventInvitee], True)
+    db.create_tables([Electricity, Event, Todo, Bill, Invitee, EventInvitee, User], True)
     return
 
 
@@ -156,21 +169,24 @@ if __name__ == '__main__':
               description="8 days ago @ 2 PM").save()
 
         # -----Invitee-----
-        Invitee(name="Test person 1",
-                email="abc@123.com").save()
-        Invitee(name="Test person 2",
+        invitee_1 = Invitee(name="Test person 1",
+                email="abc@123.com")
+        invitee_1.save()
+        invitee_2 = Invitee(name="Test person 2",
                 email="example@hotmail.com",
-                phone_number="1-234-567-8901").save()
-        Invitee(name="Test person 3",
-                email="dfgdfgdfg",
-                phone_number="741-2589").save()
+                phone_number="1-234-567-8901")
+        invitee_2.save()
+        invitee_3 = Invitee(name="Test person 3",
+                email="e2@www.org",
+                phone_number="741-2589")
+        invitee_3.save()
 
         # -----EventInvitee-----
-        EventInvitee(event=event_today, invitee=1).save()
-        EventInvitee(event=event_tomorrow_7, invitee=1).save()
-        EventInvitee(event=event_tomorrow_7, invitee=2).save()
-        EventInvitee(event=event_tomorrow_7, invitee=3).save()
-        EventInvitee(event=event_yesterday, invitee=3).save()
+        EventInvitee(event=event_today, invitee=invitee_1).save()
+        EventInvitee(event=event_tomorrow_7, invitee=invitee_1).save()
+        EventInvitee(event=event_tomorrow_7, invitee=invitee_2).save()
+        EventInvitee(event=event_tomorrow_7, invitee=invitee_3).save()
+        EventInvitee(event=event_yesterday, invitee=invitee_3).save()
 
         # -----Todos-----
         Todo(task="Non event task 1").save()
@@ -222,5 +238,58 @@ if __name__ == '__main__':
         Bill(due=datetime.date.today() - datetime.timedelta(3),
              name="Past Bill",
              amount="123").save()
+
+        # -----User-----
+        import os
+        import hashlib
+        import base64
+        salt = base64.b64encode(os.urandom(32))
+        password = hashlib.sha256('password1'.encode() + salt).hexdigest()
+        user_1 = User(name='User 1',
+                      login_name='user1',
+                      salt=salt.decode(),
+                      password=password,
+                      email_me=False,
+                      email="test@test.info",
+                      authorized=True,
+                      admin=True)
+        user_1.save()
+        salt = base64.b64encode(os.urandom(32))
+        password = hashlib.sha256('password2'.encode() + salt).hexdigest()
+        user_2 = User(name='User 2',
+                      login_name='user2',
+                      salt=salt.decode(),
+                      password=password,
+                      email_me=False,
+                      email="test2@test.info",
+                      phone_number='234-5678',
+                      authorized=True)
+        user_2.save()
+        salt = base64.b64encode(os.urandom(32))
+        password = hashlib.sha256('password3'.encode() + salt).hexdigest()
+        user_3 = User(name='User 3',
+                      login_name='user3',
+                      salt=salt.decode(),
+                      password=password,
+                      email_me=True,
+                      email="test3@test.moe",
+                      phone_number='234-5678',
+                      authorized=True)
+        user_3.save()
+        salt = base64.b64encode(os.urandom(32))
+        password = hashlib.sha256('password4'.encode() + salt).hexdigest()
+        user_4 = User(name='User 4',
+                      login_name='user4',
+                      salt=salt.decode(),
+                      password=password,
+                      email_me=True,
+                      email="test4@test.moe",
+                      authorized=False)
+        user_4.save()
+
+        # -----EventUser-----
+        EventUser(event=event_today, invitee=user_3).save()
+        EventUser(event=event_tomorrow_7, invitee=user_2).save()
+        EventUser(event=event_yesterday, invitee=user_1).save()
 
         return

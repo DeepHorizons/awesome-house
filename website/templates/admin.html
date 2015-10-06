@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block body %}
+<form class="form-group" action="/login/admin" method="POST">
+    {% if forms %}
+    {{ forms[0].hidden_tag() }}
+    <table class="table table-condensed">
+        <tr>
+            <th>User name</th>
+            <th>Authorized</th>
+        </tr>
+        {%- for form in forms[1:] %}
+        {%- if form.admin.data == False %} {# Don't list admins on this page. Don't want an admin disabling another admin #}
+        <tr>
+            <td>{{ form.name.data }}</td>
+            <td>{{ form.authorized() }}</td>
+        </tr>
+        {%- endif -%}
+        {% endfor -%}
+    </table>
+    <button type="submit" class="btn btn-default">Submit</button>
+    {% endif %}
+</form>
+{% endblock %}
