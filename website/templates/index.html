@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% import 'include_html/macros.html' as macros %}
 {% block body %}
 <h1 class="page-header">Welcome to Awesome House!</h1>
 <div>
@@ -41,28 +42,7 @@
     <div class="col-xs-12 col-sm-6">
         <center><h4>To-dos</h4></center>
         <div class="table-responsive">
-            <table class="table table-hover">
-                <thead>
-                    <tr>
-                        <th>Task</th>
-                        <th>Done?</th>
-                        <th>Date Done</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for todo in todos %}
-                    <tr id="row_{{ todo.id }}" {% if todo.done %}class="strikeout"{% endif %}>
-                        <td><a href="/todos/by-id/{{ todo.id }}">{{ todo.task }}</a></td>
-                        <td><input type="checkbox" data-id="{{ todo.id }}" {% if todo.done %}checked{% endif %} onclick="sendCheckBox(this)"></td>
-                        <td><div id="date_{{ todo.id }}">{% if todo.date_done %}{{ todo.date_done }}{% endif %}</div></td>
-                    </tr>
-                    {% else %}
-                    <tr>
-                        <td>No tasks listed</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+            {{ macros.todo_list(todos, current_user, '<tr><td>No tasks listed</td></tr>') }}
         </div>
     </div>
 </div>

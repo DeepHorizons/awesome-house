@@ -1,4 +1,6 @@
 {% extends "base.html" %}
+{% import 'include_html/macros.html' as macros %}
+
 {% block body %}
 <h2>Future events</h2>
 <br>
@@ -9,24 +11,7 @@
         {% if get_count(event.todos) %}
         <div class="col-md-5 col-sm-6 col-xs-12">
             <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th>Task</th>
-                            <th>Done?</th>
-                            <th>Date Done</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    {% for todo in event.todos %}
-                         <tr id="row_{{ todo.id }}" {% if todo.done %}class="strikeout"{% endif %}>
-                            <td><a href="/todos/by-id/{{ todo.id }}">{{ todo.task }}</a></td>
-                            <td><input type="checkbox" data-id="{{ todo.id }}" {% if todo.done %}checked{% endif %} onclick="sendCheckBox(this)"></td>
-                            <td><div id="date_{{ todo.id }}">{% if todo.date_done %}{{ todo.date_done }}{% endif %}</div></td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
+                {{ macros.todo_list(event.todos, current_user) }}
             </div>
         </div>
         {% else %}
