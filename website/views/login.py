@@ -11,12 +11,12 @@ import hashlib
 import os
 import base64
 
-logger = logging.getLogger(__name__)
-
 # Local imports
 from __init__ import app
 import models
 import forms
+
+logger = logging.getLogger(__name__)
 
 login_manager = flask_login.LoginManager()
 login_manager.init_app(app)

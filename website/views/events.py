@@ -9,11 +9,11 @@ import datetime
 import peewee
 import flask_login
 
-logger = logging.getLogger(__name__)
-
 # Local imports
 from __init__ import app
 import models
+
+logger = logging.getLogger(__name__)
 
 
 def get_count(obj):

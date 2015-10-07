@@ -10,6 +10,8 @@ import logging
 from __init__ import app
 import models
 
+logger = logging.getLogger(__name__)
+
 
 @app.route('/electricity')
 def electricity():

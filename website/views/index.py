@@ -8,12 +8,12 @@ import logging
 import datetime
 import flask_login
 
-logger = logging.getLogger(__name__)
-
 # Local imports
 from __init__ import app
 import models
 import forms
+
+logger = logging.getLogger(__name__)
 
 
 @app.route('/')
