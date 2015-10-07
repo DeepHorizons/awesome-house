@@ -14,7 +14,7 @@ import base64
 # Local imports
 from __init__ import app
 import models
-import forms
+import forms.login_forms
 
 logger = logging.getLogger(__name__)
 
@@ -83,7 +83,7 @@ def login():
 def login_check():
     flask_error_message = "Username or password incorrect"
 
-    form = forms.LoginForm(prefix='login_')
+    form = forms.login_forms.LoginForm(prefix='login_')
     if form.validate_on_submit():
         login_name = form.login_name.data
         user = User.get(login_name)
@@ -137,7 +137,7 @@ def format_phone_number(phone_number):
 @app.route('/login/settings', methods=['GET', 'POST'])
 @flask_login.login_required
 def login_settings():
-    form = forms.SettingsForm()
+    form = forms.login_forms.SettingsForm()
     if flask.request.method == 'POST':
         if form.validate_on_submit():
             name = form.name.data
@@ -174,7 +174,7 @@ def login_settings():
 @app.route('/login/register', methods=['GET', 'POST'])
 def login_register():
     if not flask_login.current_user.is_authenticated:
-        form = forms.RegisterForm()
+        form = forms.login_forms.RegisterForm()
         if flask.request.method == 'POST':
             if form.validate_on_submit():
                 login_name = form.login_name.data
@@ -222,7 +222,7 @@ def login_register():
 def login_admin():
     if flask_login.current_user.is_admin:
         if flask.request.method == 'POST':
-            form = forms.UserForm()
+            form = forms.login_forms.UserForm()
             if form.validate_on_submit():
                 # Authorization
                 # Get all form data about authorization
@@ -246,9 +246,9 @@ def login_admin():
 
         # On other requests
         users = models.User.select().order_by(models.User.authorized).dicts()
-        users_forms = [forms.UserForm()]
+        users_forms = [forms.login_forms.UserForm()]
         for user in users:
-            tmpForm = forms.UserForm(None, prefix=str(user['id'])+'_')  # Adds <id>_ to all data for later retrieval
+            tmpForm = forms.login_forms.UserForm(None, prefix=str(user['id'])+'_')  # Adds <id>_ to all data for later retrieval
             for field in tmpForm:
                 field.data = user.get(field.name[field.name.find('_')+1:])  # Get properties off of the user
             users_forms.append(tmpForm)

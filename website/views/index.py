@@ -11,7 +11,7 @@ import flask_login
 # Local imports
 from __init__ import app
 import models
-import forms
+import forms.login_forms
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +29,7 @@ def index():
 def before_request():
     flask.g.db = models.db
     if not flask_login.current_user.is_authenticated:
-        flask.g.login_form = forms.LoginForm(prefix='login_')
+        flask.g.login_form = forms.login_forms.LoginForm(prefix='login_')
     models.before_request_handler(flask.g.db)
     return
 
