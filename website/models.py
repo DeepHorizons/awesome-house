@@ -112,7 +112,7 @@ atexit.register(after_request_handler, db)
 
 def create_tables():
     before_request_handler(db)
-    db.create_tables([Electricity, Event, Todo, Bill, Invitee, EventInvitee, User], True)
+    db.create_tables([Electricity, Event, Todo, Bill, Invitee, EventInvitee, User, EventUser], True)
     return
 
 
