@@ -22,7 +22,7 @@ def get_count(obj):
 
 @app.route('/events')
 def events():
-    events = models.Event.select()
+    events = models.Event.select().where(models.Event.date_time >= datetime.datetime.combine(datetime.date.today(), datetime.time()))
     todos = models.Todo.select()
     events_with_todos = peewee.prefetch(events, todos)
     return flask.render_template('events.html', title='Events', events=events_with_todos, get_count=get_count)
