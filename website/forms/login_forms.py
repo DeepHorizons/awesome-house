@@ -33,13 +33,13 @@ class SettingsForm(flask_wtf.Form):
 
 
 class LoginForm(flask_wtf.Form):
-    login_name = wtforms.StringField('username', [wtforms.validators.Length(max=64), wtforms.validators.DataRequired()],
+    login_name = wtforms.StringField(None, [wtforms.validators.Length(max=64), wtforms.validators.DataRequired()],
                                      description='Your login name')
-    password = wtforms.PasswordField('password', [wtforms.validators.Length(max=64), wtforms.validators.DataRequired()],
+    password = wtforms.PasswordField(None, [wtforms.validators.Length(max=64), wtforms.validators.DataRequired()],
                                      description='Your password')
 
 
-class RegisterForm(SettingsForm, LoginForm):
+class RegisterForm(LoginForm, SettingsForm):
     pass
 
 

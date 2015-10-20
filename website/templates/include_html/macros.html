@@ -20,3 +20,14 @@
     </tbody>
 </table>
 {% endmacro %}
+
+{% macro gen_group(group, placeholder='', name='') %}
+    <div class="form-group {% if group.errors %}has-error{% endif %}">
+        {%- for error in group.errors %}
+        <label class="control-label">{{ error }}</label>
+        {%- else %}
+        {% if name %}{{ group.label(name) }}{% else %}{{ group.label() }}{% endif %}
+        {%- endfor %}
+        {% if placeholder %}{{ group(class='form-control', placeholder=placeholder) }}{% else %}{{ group(class='form-control') }}{% endif %}
+    </div>
+{% endmacro %}
