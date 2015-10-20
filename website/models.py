@@ -136,8 +136,8 @@ if __name__ == '__main__':
 
         # -----Event-----
         event_today = Event(name="Event Today",
-              date_time=datetime.datetime.today(),
-              description="This date is today at the time of the creation")
+                            date_time=datetime.datetime.today(),
+                            description="This date is today at the time of the creation")
         event_today.save()
 
         # events in the future
@@ -146,8 +146,8 @@ if __name__ == '__main__':
               description="24 hours in the future").save()
 
         event_tomorrow_7 = Event(name="Event Tomorrow @ 7:30",
-              date_time=datetime.datetime.combine(datetime.date.today() + datetime.timedelta(1), datetime.time(19, 30)),
-              description="for tomorrow that starts at 7:30 PM")
+                                 date_time=datetime.datetime.combine(datetime.date.today() + datetime.timedelta(1), datetime.time(19, 30)),
+                                 description="for tomorrow that starts at 7:30 PM")
         event_tomorrow_7.save()
         Event(name="Event next week @ 11 AM",
               date_time=datetime.datetime.combine(datetime.date.today() + datetime.timedelta(7), datetime.time(11, 0)),
@@ -158,8 +158,8 @@ if __name__ == '__main__':
 
         # in the past
         event_yesterday = Event(name="Event Yesterday",
-              date_time=datetime.datetime.today() - datetime.timedelta(1),
-              description="-24 hours")
+                                date_time=datetime.datetime.today() - datetime.timedelta(1),
+                                description="-24 hours")
         event_yesterday.save()
         Event(name="Event Yesterday @ 6:14",
               date_time=datetime.datetime.combine(datetime.date.today() - datetime.timedelta(1), datetime.time(18, 14)),
@@ -170,15 +170,15 @@ if __name__ == '__main__':
 
         # -----Invitee-----
         invitee_1 = Invitee(name="Test person 1",
-                email="abc@123.com")
+                            email="abc@123.com")
         invitee_1.save()
         invitee_2 = Invitee(name="Test person 2",
-                email="example@hotmail.com",
-                phone_number="1-234-567-8901")
+                            email="example@hotmail.com",
+                            phone_number="1-234-567-8901")
         invitee_2.save()
         invitee_3 = Invitee(name="Test person 3",
-                email="e2@www.org",
-                phone_number="741-2589")
+                            email="e2@www.org",
+                            phone_number="741-2589")
         invitee_3.save()
 
         # -----EventInvitee-----
