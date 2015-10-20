@@ -43,9 +43,9 @@ class Electricity(BaseModel):
 
 class Event(BaseModel):
     date_time = peewee.DateTimeField()
-    name = peewee.CharField()
+    name = peewee.CharField(max_length=64)
     deleted = peewee.BooleanField(default=False)
-    description = peewee.CharField()
+    description = peewee.CharField(default="", max_length=4096)
 
 
 class Invitee(BaseModel):

@@ -12,6 +12,7 @@ import flask_login
 # Local imports
 from __init__ import app
 import models
+import forms.event_forms
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +26,8 @@ def events():
     events = models.Event.select().where(models.Event.date_time >= datetime.datetime.combine(datetime.date.today(), datetime.time()))
     todos = models.Todo.select()
     events_with_todos = peewee.prefetch(events, todos)
-    return flask.render_template('events.html', title='Events', events=events_with_todos, get_count=get_count)
+    newEventForm = forms.event_forms.NewEventForm()
+    return flask.render_template('events.html', title='Events', events=events_with_todos, get_count=get_count, event_form=newEventForm)
 
 
 @app.route('/events/by-id/<int:event_id>')
