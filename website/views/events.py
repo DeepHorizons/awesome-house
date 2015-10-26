@@ -21,12 +21,23 @@ def get_count(obj):
     return obj.count()
 
 
-@app.route('/events')
+@app.route('/events', methods=['GET', 'POST'])
 def events():
+    newEventForm = forms.event_forms.NewEventForm()
+    if flask.request.method == 'POST':
+        if newEventForm.validate_on_submit():
+            name = newEventForm.name.data
+            date = newEventForm.date.data
+            description = newEventForm.description.data
+            logger.debug('Adding event, name {}; date {}; description {}'.format(name, date, description))
+            event = models.Event(name=name,
+                                 date_time=date,
+                                 description=description)
+            event.save()
+            flask.flash('Successfully added event', 'success')
     events = models.Event.select().where(models.Event.date_time >= datetime.datetime.combine(datetime.date.today(), datetime.time()))
     todos = models.Todo.select()
     events_with_todos = peewee.prefetch(events, todos)
-    newEventForm = forms.event_forms.NewEventForm()
     return flask.render_template('events.html', title='Events', events=events_with_todos, get_count=get_count, event_form=newEventForm)
 
 

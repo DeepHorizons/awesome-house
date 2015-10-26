@@ -1,30 +1,47 @@
 {% extends "base.html" %}
 {% import 'include_html/macros.html' as macros %}
 
+{% block extra_header %}
+<link rel="stylesheet" type="text/css" href="/static/css/bootstrap-datetimepicker.min.css">
+{% endblock %}
+
 {% block body %}
 <!-- Button trigger modal -->
-<button type="button " class="btn btn-primary" data-toggle="modal" data-target="#addEvent">
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addEvent">
   Add Event
 </button>
 
 <!-- Modal -->
-<div class="modal fade" id="addEvent" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+<div class="modal fade" id="addEvent" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">New Event</h4>
+        <h4 class="modal-title">New Event</h4>
       </div>
       <div class="modal-body">
+          <form class="form-group" action="/events" method="POST">
+              {{ event_form.hidden_tag() }}
+              {{ macros.gen_group(event_form.name) }}
 
-          {{ macros.gen_group(event_form.name) }}
-          {{ macros.gen_group(event_form.date) }}
-          {{ macros.gen_group(event_form.description) }}
+              <div class="form-group {% if event_form.date.errors %}has-error{% endif %}">
+                  {%- for error in event_form.date.errors %}
+                  <label class="control-label">{{ error }}</label>
+                  {%- else %}
+                  {{ event_form.date.label() }}
+                  {%- endfor %}
 
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
+                  <div class='input-group date' id='datetimepicker1'>
+                      {{ event_form.date(class="form-control") }}
+                      <span class="input-group-addon">
+                          <span class="glyphicon glyphicon-calendar"></span>
+                      </span>
+                  </div>
+              </div>
+
+              {{ macros.gen_group(event_form.description) }}
+              <button type="submit" class="btn btn-default">Submit</button>
+          </form>
       </div>
     </div>
   </div>
@@ -53,4 +70,21 @@
 
 {% block extrajs %}
 <script src="/static/js/todo.js"></script>
+<script type="text/javascript">
+    //Open the modal if there is an error
+    var formErrors = {% if event_form.errors %}true{% else %}false{% endif %};
+    $(document).ready(function() {
+        if (formErrors) {
+            $('.modal').modal('show');
+        }
+    });
+</script>
+<script src="/static/js/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript">
+    $("#datetimepicker1").datetimepicker({
+        pickerPosition: "bottom-left",
+        showMeridian: true,
+        autoclose: true,
+    });
+</script>
 {% endblock %}
