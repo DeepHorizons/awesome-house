@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% import 'include_html/macros.html' as macros %}
+{% block body %}
+{% if error %}
+    {{ error }}
+{% else %}
+    <div class="row">
+        <div class="col-xs-12 col-sm-8 col-md-6">
+            <div class="table-responsive">
+                <h1>{{ event.name }}</h1>
+                <h2><small>{{ event.date_time }}</small></h2>
+                <br>
+                <pre>{{ event.description }}</pre>
+                <div class="row" style="width: 100%">
+                    {% if event.todos.count() %}
+                    <div class="col-xs-12">
+                        <div class="table-responsive">
+                            {{ macros.todo_list(event.todos, current_user) }}
+                        </div>
+                    </div>
+                    {% else %}
+                        No Tasks<br>
+                        <br>
+                    {% endif %}
+                </div>
+                <button class="btn btn-default" type="submit">Edit</button>
+                <button class="btn btn-danger" type="submit">Delete</button>
+            </div>
+        </div>
+    </div>
+
+{% endif %}
+{% endblock %}

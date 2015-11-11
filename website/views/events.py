@@ -37,10 +37,13 @@ def events():
     return flask.render_template('events.html', title='Events', events=events_with_todos, event_form=newEventForm)
 
 
-@app.route('/events/by-id/<int:event_id>')
+@app.route('/events/by-id/<int:event_id>', methods=['GET', 'POST'])
 def event_by_id(event_id):
-    event = models.Event.get(models.Event.id == event_id)
-    return event.name
+    try:
+        event = models.Event.get(models.Event.id == event_id)
+    except peewee.DoesNotExist:
+        return flask.render_template('event/event-by-id.html', error='Event id {} does not exit'.format(event_id))
+    return flask.render_template('event/event-by-id.html', event=event)
 
 
 @app.route('/todos')
