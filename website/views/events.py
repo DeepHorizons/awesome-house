@@ -31,10 +31,10 @@ def events():
                                  description=description)
             event.save()
             flask.flash('Successfully added event', 'success')
-    events = models.Event.select().where(models.Event.date_time >= datetime.datetime.combine(datetime.date.today(), datetime.time()))
+    events = models.Event.select().order_by(models.Event.date_time.asc()).where(models.Event.date_time >= datetime.datetime.combine(datetime.date.today(), datetime.time()))
     todos = models.Todo.select()
     events_with_todos = peewee.prefetch(events, todos)
-    return flask.render_template('events.html', title='Events', events=events_with_todos, get_count=get_count, event_form=newEventForm)
+    return flask.render_template('events.html', title='Events', events=events_with_todos, event_form=newEventForm)
 
 
 @app.route('/events/by-id/<int:event_id>')
