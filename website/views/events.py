@@ -17,10 +17,6 @@ import forms.event_forms
 logger = logging.getLogger(__name__)
 
 
-def get_count(obj):
-    return obj.count()
-
-
 @app.route('/events', methods=['GET', 'POST'])
 def events():
     newEventForm = forms.event_forms.NewEventForm()

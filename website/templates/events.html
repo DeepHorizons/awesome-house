@@ -46,13 +46,14 @@
     </div>
   </div>
 </div>
+
 <h2>Future events</h2>
 <br>
 {% for event in events %}
     <h4><a href="/events/by-id/{{ event.id }}">{{ event.name }}</a> - <small>{{ event.date_time.date() }} @ {{ event.date_time.strftime("%I:%M %p") }}</small></h4>
 
     <div class="row" style="padding-left: 1cm">
-        {% if get_count(event.todos) %}
+        {% if event.todos.count() %}
         <div class="col-md-5 col-sm-6 col-xs-12">
             <div class="table-responsive">
                 {{ macros.todo_list(event.todos, current_user) }}
