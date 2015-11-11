@@ -3,20 +3,20 @@
     <thead>
         <tr>
             <th>Task</th>
-            {% if current_user.is_authenticated %}<th>Done?</th>{% endif %}
+            {%- if current_user.is_authenticated %}<th>Done?</th>{% endif %}
             <th>Date Done</th>
         </tr>
     </thead>
     <tbody>
-        {% for todo in todos %}
+        {%- for todo in todos %}
         <tr id="row_{{ todo.id }}" {% if todo.done %}class="strikeout"{% endif %}>
             <td><a href="/todos/by-id/{{ todo.id }}">{{ todo.task }}</a></td>
-            {% if current_user.is_authenticated %}<td><input type="checkbox" data-id="{{ todo.id }}" {% if todo.done %}checked{% endif %} onclick="sendCheckBox(this)"></td>{% endif %}
+            {%- if current_user.is_authenticated %}<td><input type="checkbox" data-id="{{ todo.id }}" {% if todo.done %}checked{% endif %} onclick="sendCheckBox(this)"></td>{% endif %}
             <td><div id="date_{{ todo.id }}">{% if todo.date_done %}{{ todo.date_done }}{% endif %}</div></td>
         </tr>
         {% else %}
         {{ else }}
-        {% endfor %}
+        {%- endfor %}
     </tbody>
 </table>
 {% endmacro %}
