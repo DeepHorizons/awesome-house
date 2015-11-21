@@ -61,7 +61,7 @@ class EventInvitee(BaseModel):
 
 
 class Todo(BaseModel):
-    event = peewee.ForeignKeyField(Event, related_name='todos', null=True)
+    event = peewee.ForeignKeyField(Event, related_name='todos', null=True, default=None)
     task = peewee.CharField()
     done = peewee.BooleanField(default=False)
     deleted = peewee.BooleanField(default=False)
