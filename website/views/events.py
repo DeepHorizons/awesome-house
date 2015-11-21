@@ -47,14 +47,17 @@ def event_by_id(event_id):
         return flask.render_template('event/event-by-id.html', error='Event id {} does not exit'.format(event_id))
 
     if flask.request.method == 'POST':
-        event_form = forms.event_forms.EditEventForm()
         method = flask.request.form.get('_method', '').upper()
         if method == 'PUT':
-            event.name = event_form.name.data
-            event.date_time = event_form.date.data
-            event.description = event_form.description.data
-            event.save()
-            flask.flash('Event updated', 'success')
+            event_form = forms.event_forms.EditEventForm()
+            if event_form.validate_on_submit():
+                event.name = event_form.name.data
+                event.date_time = event_form.date.data
+                event.description = event_form.description.data
+                event.save()
+                flask.flash('Event updated', 'success')
+            else:
+                flask.flash('Could not update event', 'danger')
         elif method == 'DELETE':
             if event.deleted:
                 event.deleted = False
@@ -64,8 +67,8 @@ def event_by_id(event_id):
                 message = 'Event deleted'
             event.save()
             flask.flash(message, 'success')
-    else:
-        event_form = forms.event_forms.EditEventForm(name=event.name, date=event.date_time, description=event.description)
+
+    event_form = forms.event_forms.EditEventForm(formdata=None, name=event.name, date=event.date_time, description=event.description)
     return flask.render_template('event/event-by-id.html', event=event, event_form=event_form)
 
 
