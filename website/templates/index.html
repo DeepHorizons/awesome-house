@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% import 'include_html/macros.html' as macros %}
+{% import 'include_html/new_todo_modal.html' as todo_macros %}
 {% block body %}
 <h1 class="page-header">Welcome to Awesome House!</h1>
 <div>
@@ -43,8 +44,11 @@
         <div class="table-responsive">
             {{ macros.todo_list(todos, current_user, '<tr><td>No tasks listed</td></tr>') }}
         </div>
+        <button class="btn btn-default" data-toggle="modal" data-target="#addTodo">Add Todo</button>
     </div>
 </div>
+
+{{ todo_macros.new_todo_modal(todo_form, '/', None) }}
 {% endblock %}
 
 {% block extrajs %}
