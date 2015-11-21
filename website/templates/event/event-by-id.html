@@ -1,5 +1,10 @@
 {% extends "base.html" %}
 {% import 'include_html/macros.html' as macros %}
+
+{% block extra_header %}
+<link rel="stylesheet" type="text/css" href="/static/css/bootstrap-datetimepicker.min.css">
+{% endblock %}
+
 {% block body %}
 {% if error %}
     {{ error }}
@@ -8,6 +13,7 @@
     <div class="row">
         <div class="col-xs-12 col-sm-8 col-md-6">
             <div class="table-responsive">
+                {% if event.deleted %}<del>{% endif %}
                 <h1>{{ event.name }}</h1>
                 <h2><small>{{ event.date_time }}</small></h2>
                 <br>
@@ -25,6 +31,7 @@
                         <br>
                     {% endif %}
                 </div>
+                {% if event.deleted %}</del>{% endif %}
                 <button class="btn btn-default" data-toggle="modal" data-target="#editEvent">Edit</button>
                 <button class="btn btn-danger" type="submit">Delete</button>
             </div>
@@ -41,7 +48,8 @@
         <h4 class="modal-title">New Event</h4>
       </div>
       <div class="modal-body">
-          <form class="form-group" action="/events" method="POST">
+          <form class="form-group" action="/events/by-id/{{event.id}}" method="POST">
+              <input type="hidden" name="_method" value="PUT" />
               {{ event_form.hidden_tag() }}
               {{ macros.gen_group(event_form.name) }}
 
@@ -73,4 +81,21 @@
 
 {% block extrajs %}
 <script src="/static/js/todo.js"></script>
+<script type="text/javascript">
+    //Open the modal if there is an error
+    var formErrors = {% if event_form.errors %}true{% else %}false{% endif %};
+    $(document).ready(function() {
+        if (formErrors) {
+            $('.modal').modal('show');
+        }
+    });
+</script>
+<script src="/static/js/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript">
+    $("#datetimepicker1").datetimepicker({
+        pickerPosition: "bottom-left",
+        showMeridian: true,
+        autoclose: true,
+    });
+</script>
 {% endblock %}

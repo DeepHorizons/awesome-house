@@ -45,6 +45,19 @@ def event_by_id(event_id):
         event = models.Event.get(models.Event.id == event_id)
     except peewee.DoesNotExist:
         return flask.render_template('event/event-by-id.html', error='Event id {} does not exit'.format(event_id))
+
+    if flask.request.method == 'POST':
+        event_form = forms.event_forms.EditEventForm()
+        method = flask.request.form.get('_method', '').upper()
+        if method == 'PUT':
+            event.name = event_form.name.data
+            event.date_time = event_form.date.data
+            event.description = event_form.description.data
+            event.save()
+            flask.flash('Event updated', 'success')
+        elif method == 'DELETE':
+            event.deleted = True
+            event.save()
     else:
         event_form = forms.event_forms.EditEventForm(name=event.name, date=event.date_time, description=event.description)
     return flask.render_template('event/event-by-id.html', event=event, event_form=event_form)
