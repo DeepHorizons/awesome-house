@@ -18,6 +18,7 @@ logger = logging.getLogger(__name__)
 
 
 @app.route('/events', methods=['GET', 'POST'])
+@flask_login.login_required
 def events():
     newEventForm = forms.event_forms.NewEventForm()
     if flask.request.method == 'POST':
@@ -38,6 +39,7 @@ def events():
 
 
 @app.route('/events/by-id/<int:event_id>', methods=['GET', 'POST'])
+@flask_login.login_required
 def event_by_id(event_id):
     try:
         event = models.Event.get(models.Event.id == event_id)
@@ -49,12 +51,14 @@ def event_by_id(event_id):
 
 
 @app.route('/todos')
+@flask_login.login_required
 def todo():
     todos = models.Todo.select()
     return flask.render_template('todo.html', title='Todo', todos=todos)
 
 
 @app.route('/todos/by-id/<int:todo_id>')
+@flask_login.login_required
 def todo_by_id(todo_id):
     task = models.Todo.get(models.Todo.id == todo_id)
     return task.task
