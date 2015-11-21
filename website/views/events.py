@@ -8,6 +8,8 @@ import logging
 import datetime
 import peewee
 import flask_login
+from urllib.parse import urlparse, urljoin
+from flask import request, url_for
 
 # Local imports
 from __init__ import app
@@ -15,6 +17,21 @@ import models
 import forms.event_forms
 
 logger = logging.getLogger(__name__)
+
+
+# http://flask.pocoo.org/snippets/62/
+def is_safe_url(target):
+    ref_url = urlparse(request.host_url)
+    test_url = urlparse(urljoin(request.host_url, target))
+    return test_url.scheme in ('http', 'https') and \
+           ref_url.netloc == test_url.netloc
+
+
+def redirect_back(endpoint, **values):
+    target = request.form['next']
+    if not target or not is_safe_url(target):
+        target = url_for(endpoint, **values)
+    return flask.redirect(target)
 
 
 @app.route('/events', methods=['GET', 'POST'])
@@ -69,14 +86,30 @@ def event_by_id(event_id):
             flask.flash(message, 'success')
 
     event_form = forms.event_forms.EditEventForm(formdata=None, name=event.name, date=event.date_time, description=event.description)
-    return flask.render_template('event/event-by-id.html', event=event, event_form=event_form)
+    new_todo_form = forms.event_forms.NewTodoForm(formdata=None, event=event_id)
+    return flask.render_template('event/event-by-id.html', event=event, event_form=event_form, todo_form=new_todo_form)
 
 
-@app.route('/todos')
+@app.route('/todos', methods=['GET', 'POST'])
 @flask_login.login_required
-def todo():
-    todos = models.Todo.select()
-    return flask.render_template('todo.html', title='Todo', todos=todos)
+def todos():
+    newTodoForm = forms.event_forms.NewTodoForm()
+    if flask.request.method == 'POST':
+        if newTodoForm.validate_on_submit():
+            event = newTodoForm.event.data
+            task = newTodoForm.task.data
+            description = newTodoForm.description.data
+            logger.debug('Adding todo, event {}; task {}; description {}'.format(event, task, description))
+            todo = models.Todo(event=event,
+                               task=task,
+                               description=description)
+            todo.save()
+            flask.flash('Successfully added todo', 'success')
+            next = request.form['next']
+            if next:
+                return redirect_back('/todos')
+    all_todos = models.Todo.select()
+    return flask.render_template('todo.html', title='Todo', todos=all_todos)
 
 
 @app.route('/todos/by-id/<int:todo_id>')
@@ -90,6 +123,7 @@ def todo_by_id(todo_id):
 @flask_login.login_required
 def todo_status():
     """Ajax request"""
+    print(flask.request.form)
     try:
         task_id = int(flask.request.form['id'])
         status = True if flask.request.form['status'] == 'true' else False

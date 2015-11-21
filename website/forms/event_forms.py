@@ -14,3 +14,15 @@ class NewEventForm(flask_wtf.Form):
 
 class EditEventForm(NewEventForm):
     pass
+
+
+class NewTodoForm(flask_wtf.Form):
+    event = wtforms.IntegerField(None, [wtforms.validators.Optional()])
+    task = wtforms.StringField(None, [wtforms.validators.Length(max=64), wtforms.validators.DataRequired()],
+                               description='The task to do')
+    description = wtforms.StringField(None, [wtforms.validators.Length(max=4096), wtforms.validators.Optional()],
+                                      description='A description of the task', widget=TextArea())
+
+
+class EditTodoForm(NewTodoForm):
+    pass
