@@ -34,7 +34,7 @@ Current Projects
 The landing page of the website lists nearing events 
 (events that are within a month of the current date) and a list of tasks.
 Tasks that are done will be striked through.
-If the checkbox of the to-do, the box will strike out, 
+If the checkbox of the to-do is checked, the box will strike out, 
 but a check box is only visible if a user is logged in.
 
 A user that is not registered can only access the read only portion of the site.
@@ -42,3 +42,8 @@ A user can register by clicking in the top right of the site and clicking regist
 The account then needs to be authorized by an admin.
 Once logged in, the user can access settings in the top right.
 
+###### Events
+The event page lists all future events, deleted and non deleted.
+To add an event, click the 'Add Event' button and fill in the details.
+Clicking on an event will show its details.
+You can also add tasks from the specific event page.
