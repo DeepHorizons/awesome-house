@@ -50,7 +50,8 @@
 <h2>Future events</h2>
 <br>
 {% for event in events %}
-    <h4><a href="/events/by-id/{{ event.id }}">{{ event.name }}</a> - <small>{{ event.date_time.date() }} @ {{ event.date_time.strftime("%I:%M %p") }}</small></h4>
+    <h4>{% if event.deleted %}<del>{% endif %}<a href="/events/by-id/{{ event.id }}">{{ event.name }}</a>
+        - <small>{{ event.date_time.date() }} @ {{ event.date_time.strftime("%I:%M %p") }}</small>{% if event.deleted %}</del>{% endif %}</h4>
 
     <div class="row" style="padding-left: 1cm">
         {% if event.todos.count() %}

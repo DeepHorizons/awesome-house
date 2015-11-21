@@ -56,8 +56,14 @@ def event_by_id(event_id):
             event.save()
             flask.flash('Event updated', 'success')
         elif method == 'DELETE':
-            event.deleted = True
+            if event.deleted:
+                event.deleted = False
+                message = 'Event un-deleted'
+            else:
+                event.deleted = True
+                message = 'Event deleted'
             event.save()
+            flask.flash(message, 'success')
     else:
         event_form = forms.event_forms.EditEventForm(name=event.name, date=event.date_time, description=event.description)
     return flask.render_template('event/event-by-id.html', event=event, event_form=event_form)
