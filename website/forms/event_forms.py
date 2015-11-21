@@ -10,3 +10,7 @@ class NewEventForm(flask_wtf.Form):
                                 description='The date and time of the event')
     description = wtforms.StringField(None, [wtforms.validators.Length(max=4096), wtforms.validators.Optional()],
                                        description='A description of the event', widget=TextArea())
+
+
+class EditEventForm(NewEventForm):
+    pass

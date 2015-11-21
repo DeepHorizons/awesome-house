@@ -43,7 +43,9 @@ def event_by_id(event_id):
         event = models.Event.get(models.Event.id == event_id)
     except peewee.DoesNotExist:
         return flask.render_template('event/event-by-id.html', error='Event id {} does not exit'.format(event_id))
-    return flask.render_template('event/event-by-id.html', event=event)
+    else:
+        event_form = forms.event_forms.EditEventForm(name=event.name, date=event.date_time, description=event.description)
+    return flask.render_template('event/event-by-id.html', event=event, event_form=event_form)
 
 
 @app.route('/todos')

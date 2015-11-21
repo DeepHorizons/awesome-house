@@ -4,6 +4,7 @@
 {% if error %}
     {{ error }}
 {% else %}
+<div class="container-fluid">
     <div class="row">
         <div class="col-xs-12 col-sm-8 col-md-6">
             <div class="table-responsive">
@@ -19,15 +20,57 @@
                         </div>
                     </div>
                     {% else %}
-                        No Tasks<br>
+                        <div style="margin-left: 15px">No Tasks</div><!-- The style is needed because otherwise the row style cuts the text off -->
+                        <br>
                         <br>
                     {% endif %}
                 </div>
-                <button class="btn btn-default" type="submit">Edit</button>
+                <button class="btn btn-default" data-toggle="modal" data-target="#editEvent">Edit</button>
                 <button class="btn btn-danger" type="submit">Delete</button>
             </div>
         </div>
     </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="editEvent" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">New Event</h4>
+      </div>
+      <div class="modal-body">
+          <form class="form-group" action="/events" method="POST">
+              {{ event_form.hidden_tag() }}
+              {{ macros.gen_group(event_form.name) }}
+
+              <div class="form-group {% if event_form.date.errors %}has-error{% endif %}">
+                  {%- for error in event_form.date.errors %}
+                  <label class="control-label">{{ error }}</label>
+                  {%- else %}
+                  {{ event_form.date.label() }}
+                  {%- endfor %}
+
+                  <div class='input-group date' id='datetimepicker1'>
+                      {{ event_form.date(class="form-control") }}
+                      <span class="input-group-addon">
+                          <span class="glyphicon glyphicon-calendar"></span>
+                      </span>
+                  </div>
+              </div>
+
+              {{ macros.gen_group(event_form.description) }}
+              <button type="submit" class="btn btn-default">Submit</button>
+          </form>
+      </div>
+    </div>
+  </div>
+</div>
 
 {% endif %}
+{% endblock %}
+
+{% block extrajs %}
+<script src="/static/js/todo.js"></script>
 {% endblock %}
