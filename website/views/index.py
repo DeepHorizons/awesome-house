@@ -19,8 +19,8 @@ logger = logging.getLogger(__name__)
 
 @app.route('/')
 def index():
-    tasks = models.Todo.select().where((models.Todo.event == None) & ((models.Todo.done == False) |
-                                        (models.Todo.date_done > (datetime.date.today() - datetime.timedelta(days=7)))))
+    tasks = models.Todo.select().where((models.Todo.event == None) & (models.Todo.deleted == False) &
+            ((models.Todo.done == False) | (models.Todo.date_done > (datetime.date.today() - datetime.timedelta(days=7)))))
     nearing_events = models.Event.select().order_by(models.Event.date_time.asc()).where((models.Event.date_time.between(datetime.datetime.combine(datetime.date.today(), datetime.time()),
                                                 datetime.datetime.today() + datetime.timedelta(31))) & (models.Event.deleted == False))
     new_todo_form = forms.event_forms.NewTodoForm(formdata=None)
