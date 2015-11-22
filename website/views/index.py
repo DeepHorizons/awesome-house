@@ -20,10 +20,19 @@ logger = logging.getLogger(__name__)
 
 @app.route('/')
 def index():
-    tasks = Todo.select().where((Todo.event == None) & (Todo.deleted == False) &
-            ((Todo.done == False) | (Todo.date_done > (datetime.date.today() - datetime.timedelta(days=7)))))
-    nearing_events = Event.select().order_by(Event.date_time.asc()).where((Event.date_time.between(datetime.datetime.combine(datetime.date.today(), datetime.time()),
-                                                datetime.datetime.today() + datetime.timedelta(31))) & (Event.deleted == False))
+    tasks = Todo.select().where((Todo.event == None) &
+                                (Todo.deleted == False) &
+                                (
+                                    (Todo.done == False) |
+                                    (Todo.date_done > (datetime.date.today() - datetime.timedelta(days=7))))
+                                )
+    nearing_events = Event.select().order_by(Event.date_time.asc()).\
+        where((Event.deleted == False) &
+              (Event.date_time.between(
+                  datetime.datetime.combine(datetime.date.today(), datetime.time()),
+                  datetime.datetime.today() + datetime.timedelta(31))
+              )
+              )
     new_todo_form = forms.event_forms.NewTodoForm(formdata=None)
     return flask.render_template('index.html', title='Home', todos=tasks, events=nearing_events, todo_form=new_todo_form)
 
