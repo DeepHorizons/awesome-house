@@ -112,11 +112,37 @@ def todos():
     return flask.render_template('todo.html', title='Todo', todos=all_todos)
 
 
-@app.route('/todos/by-id/<int:todo_id>')
+@app.route('/todos/by-id/<int:todo_id>', methods=['GET', 'POST'])
 @flask_login.login_required
 def todo_by_id(todo_id):
-    task = models.Todo.get(models.Todo.id == todo_id)
-    return task.task
+    try:
+        todo = models.Todo.get(models.Todo.id == todo_id)
+    except peewee.DoesNotExist:
+        return flask.render_template('event/todo-by-id.html', error='Todo id {} does not exit'.format(todo_id))
+
+    if flask.request.method == 'POST':
+        method = flask.request.form.get('_method', '').upper()
+        if method == 'PUT':
+            todo_form = forms.event_forms.EditTodoForm()
+            if todo_form.validate_on_submit():
+                todo.task = todo_form.task.data
+                todo.description = todo_form.description.data
+                todo.save()
+                flask.flash('Event updated', 'success')
+            else:
+                flask.flash('Could not update event', 'danger')
+        elif method == 'DELETE':
+            if todo.deleted:
+                todo.deleted = False
+                message = 'Event un-deleted'
+            else:
+                todo.deleted = True
+                message = 'Event deleted'
+            todo.save()
+            flask.flash(message, 'success')
+
+    edit_todo_form = forms.event_forms.EditTodoForm(task=todo.task, description=todo.description)
+    return flask.render_template('event/todo-by-id.html', todo=todo, edit_todo_form=edit_todo_form)
 
 
 @app.route('/todos/status', methods=['POST'])
