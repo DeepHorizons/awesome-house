@@ -9,11 +9,13 @@
     </thead>
     <tbody>
         {%- for todo in todos %}
+        {% if not todo.deleted %}
         <tr id="row_{{ todo.id }}" {% if todo.done %}class="strikeout"{% endif %}>
             <td>{% if current_user.is_authenticated %}<a href="/todos/by-id/{{ todo.id }}">{{ todo.task }}</a>{% else %}{{ todo.task }}{% endif %}</td>
             {%- if current_user.is_authenticated %}<td><input type="checkbox" data-id="{{ todo.id }}" {% if todo.done %}checked{% endif %} onclick="sendCheckBox(this)"></td>{% endif %}
             <td><div id="date_{{ todo.id }}">{% if todo.date_done %}{{ todo.date_done }}{% endif %}</div></td>
         </tr>
+        {% endif %}
         {% else %}
         {{ else }}
         {%- endfor %}
