@@ -13,6 +13,10 @@
             <div class="table-responsive">
                 {% if todo.deleted %}<del>{% endif %}
                 <h1>{{ todo.task }}</h1>
+                {% if todo.event %}
+                Event: <a href="/events/by-id/{{ todo.event.id }}">{{ todo.event.name }}</a>
+                <br>
+                {% endif %}
                 <br>
                 <pre>{{ todo.description }}</pre>
                 {% if todo.deleted %}</del>{% endif %}
