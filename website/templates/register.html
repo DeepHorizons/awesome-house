@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% import "include_html/macros.html" as macros %}
 
 {% block body %}
 <div class="row">
@@ -7,55 +8,19 @@
         <form class="form-group" action="/login/register" method="POST">
             {{ form.hidden_tag() }}
 
-            <div class="form-group {% if form.login_name.errors %}has-error{% endif %}">
-                {%- for error in form.login_name.errors %}
-                <label class="control-label">{{ error }}</label>
-                {%- else %}
-                {{ form.login_name.label('Username') }}
-                {%- endfor %}
-                {{ form.login_name(class='form-control', placeholder='EliteHax0r~xoxo') }}
-            </div>
 
-            <div class="form-group {% if form.password.errors %}has-error{% endif %}">
-                {%- for error in form.password.errors %}
-                <label class="control-label">{{ error }}</label>
-                {%- else %}
-                {{ form.password.label('Password') }}
-                {%- endfor %}
-                {{ form.password(class='form-control', placeholder='secretPassword1984') }}
-            </div>
+            {{ macros.gen_group(form.login_name, 'EliteHax0r~xoxo') }}
 
-            <div class="form-group {% if form.name.errors %}has-error{% endif %}">
-                {%- for error in form.name.errors %}
-                <label class="control-label">{{ error }}</label>
-                {%- else %}
-                {{ form.name.label('Name') }}
-                {%- endfor %}
-                {{ form.name(class='form-control', placeholder='Drew') }}
-            </div>
+            {{ macros.gen_group(form.password, 'secretPassword1984') }}
 
-            <div class="form-group {% if form.email.errors %}has-error{% endif %}">
+            {{ macros.gen_group(form.name, 'Drew') }}
 
-                {%- for error in form.email.errors %}
-                <label class="control-label">{{ error }}</label>
-                {%- else %}
-                {{ form.email.label('Email') }}
-                {%- endfor %}
-                {{ form.email(class='form-control', placeholder='123@abc.com') }}
-            </div>
+            {{ macros.gen_group(form.email, '123@abc.com') }}
 
-            <div class="form-group {% if form.phone_number.errors %}has-error{% endif %}">
-                {%- for error in form.phone_number.errors %}
-                <label class="control-label">{{ error }}</label>
-                {%- else %}
-                {{ form.phone_number.label('Phone Number') }}
-                {%- endfor %}
-                {{ form.phone_number(class='form-control', placeholder='123-456-7890') }}
-            </div>
+            {{ macros.gen_group(form.phone_number, '123-456-7890') }}
 
-
-            {{ form.email_me.label }}:
-            {% if form.email_me.data %}{{ form.email_me(checked='checked') }}{% else %}{{ form.email_me() }}{% endif %}
+            {{ form.email_me.label() }}:
+            {{ form.email_me() }}
 
             <br>
             <br>
@@ -64,10 +29,9 @@
      </div>
     <br>
     <div class="col-sm-6">
-        Name: The name you prefer to go by<br>
-        Email: This is the email you will recieve notifications to<br>
-        Phone Number: This is the phone number you will receive reminders to<br>
-        Email me for notifications: Do you want to receive emails?
+        {% for field in form %}
+        {% if field.description %}{{ field.label()}}: {{ field.description }}<br>{% endif %}
+        {% endfor %}
     </div>
 </div>
 

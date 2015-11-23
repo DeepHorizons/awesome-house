@@ -3,20 +3,33 @@
     <thead>
         <tr>
             <th>Task</th>
-            {% if current_user.is_authenticated %}<th>Done?</th>{% endif %}
+            {%- if current_user.is_authenticated %}<th>Done?</th>{% endif %}
             <th>Date Done</th>
         </tr>
     </thead>
     <tbody>
-        {% for todo in todos %}
+        {%- for todo in todos %}
+        {% if not todo.deleted %}
         <tr id="row_{{ todo.id }}" {% if todo.done %}class="strikeout"{% endif %}>
-            <td><a href="/todos/by-id/{{ todo.id }}">{{ todo.task }}</a></td>
-            {% if current_user.is_authenticated %}<td><input type="checkbox" data-id="{{ todo.id }}" {% if todo.done %}checked{% endif %} onclick="sendCheckBox(this)"></td>{% endif %}
+            <td>{% if current_user.is_authenticated %}<a href="/todos/by-id/{{ todo.id }}">{{ todo.task }}</a>{% else %}{{ todo.task }}{% endif %}</td>
+            {%- if current_user.is_authenticated %}<td><input type="checkbox" data-id="{{ todo.id }}" {% if todo.done %}checked{% endif %} onclick="sendCheckBox(this)"></td>{% endif %}
             <td><div id="date_{{ todo.id }}">{% if todo.date_done %}{{ todo.date_done }}{% endif %}</div></td>
         </tr>
+        {% endif %}
         {% else %}
         {{ else }}
-        {% endfor %}
+        {%- endfor %}
     </tbody>
 </table>
+{% endmacro %}
+
+{% macro gen_group(group, placeholder='', name='') %}
+    <div class="form-group {% if group.errors %}has-error{% endif %}">
+        {%- for error in group.errors %}
+        <label class="control-label">{{ error }}</label>
+        {%- else %}
+        {% if name %}{{ group.label(name) }}{% else %}{{ group.label() }}{% endif %}
+        {%- endfor %}
+        {% if placeholder %}{{ group(class='form-control', placeholder=placeholder) }}{% else %}{{ group(class='form-control') }}{% endif %}
+    </div>
 {% endmacro %}

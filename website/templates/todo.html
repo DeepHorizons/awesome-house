@@ -15,11 +15,11 @@
                 </thead>
                 <tbody>
                     {% for todo in todos %}
-                    <tr>
-                        {% if todo.event %}<td>{{ todo.event.name }}</td>{% else %} <td></td>{% endif %}
-                        <td>{{ todo.task }}</td>
-                        <td><input type="checkbox" name="{{ todo.id }}" {% if todo.done %}checked{% endif %} onclick="sendCheckBox(this)"></td>
-                        <td><div id="{{ todo.id }}">{% if todo.date_done %}{{ todo.date_done }}{% endif %}</div></td>
+                    <tr id="row_{{ todo.id }}" {% if todo.done %}class="strikeout"{% endif %}>
+                        {% if todo.event %}<td>{% if todo.deleted %}<del>{% endif %}<a href="/events/by-id/{{ todo.event.id }}">{{ todo.event.name }}</a>{% if todo.deleted %}</del>{% endif %}</td>{% else %} <td></td>{% endif %}
+                        <td>{% if todo.deleted %}<del>{% endif %}<a href="/todos/by-id/{{ todo.id }}">{{ todo.task }}</a>{% if todo.deleted %}</del>{% endif %}</td>
+                        {%- if current_user.is_authenticated %}<td>{% if todo.deleted %}<del>{% endif %}<input type="checkbox" data-id="{{ todo.id }}" {% if todo.done %}checked{% endif %} onclick="sendCheckBox(this)">{% if todo.deleted %}</del>{% endif %}</td>{% endif %}
+                        <td>{% if todo.deleted %}<del>{% endif %}<div id="date_{{ todo.id }}">{% if todo.date_done %}{{ todo.date_done }}{% endif %}</div>{% if todo.deleted %}</del>{% endif %}</td>
                     </tr>
                     {% else %}
                     <tr>

@@ -11,18 +11,30 @@ import flask_login
 # Local imports
 from __init__ import app
 import models
+from models import Todo, Event
 import forms.login_forms
+import forms.event_forms
 
 logger = logging.getLogger(__name__)
 
 
 @app.route('/')
 def index():
-    tasks = models.Todo.select().where((models.Todo.event == None) & ((models.Todo.done == False) |
-                                        (models.Todo.date_done > (datetime.date.today() - datetime.timedelta(days=7)))))
-    nearing_events = models.Event.select().order_by(models.Event.date_time.asc()).where(models.Event.date_time.between(datetime.datetime.combine(datetime.date.today(), datetime.time()),
-                                                datetime.datetime.today() + datetime.timedelta(31)))
-    return flask.render_template('index.html', title='Home', todos=tasks, events=nearing_events)
+    tasks = Todo.select().where((Todo.event == None) &
+                                (Todo.deleted == False) &
+                                (
+                                    (Todo.done == False) |
+                                    (Todo.date_done > (datetime.date.today() - datetime.timedelta(days=7))))
+                                )
+    nearing_events = Event.select().order_by(Event.date_time.asc()).\
+        where((Event.deleted == False) &
+              (Event.date_time.between(
+                  datetime.datetime.combine(datetime.date.today(), datetime.time()),
+                  datetime.datetime.today() + datetime.timedelta(31))
+              )
+              )
+    new_todo_form = forms.event_forms.NewTodoForm(formdata=None)
+    return flask.render_template('index.html', title='Home', todos=tasks, events=nearing_events, todo_form=new_todo_form)
 
 
 @app.before_request

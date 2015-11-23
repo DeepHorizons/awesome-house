@@ -12,9 +12,10 @@
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    {% block extra_header %}
+    {%- block extra_header %}
     {% endblock %}
 </head>
+
 <body>
     <!-- Navbar -->
     <nav class="navbar navbar-inverse navbar-static-top">
@@ -30,13 +31,14 @@
               <a class="navbar-brand" href="/">Awesome House</a>
             </div>
             <div id="navbar" class="navbar-collapse collapse">
+                {% if current_user.is_authenticated %}
                 <ul class="nav navbar-nav navbar-left">
                     <li><a href="/events">Events</a></li>
                     <li><a href="/electricity">Electricity</a></li>
                     <li><a href="/music">Music</a></li>
                     <li><a href="/bills">Bills</a></li>
                 </ul>
-                {% if current_user.is_authenticated %}
+
                 <ul class="nav navbar-nav navbar-right">
                     <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{ current_user.name }}<span class="caret"></span></a>
                         <ul class="dropdown-menu">
@@ -73,10 +75,10 @@
     </nav>
 
     <!-- Message flashing system -->
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-                {% if category == 'message' %}
+    {%- with messages = get_flashed_messages(with_categories=true) %}
+        {%- if messages %}
+            {%- for category, message in messages %}
+                {%- if category == 'message' %}
                     <div class="alert alert-warning alert-dismissible" role="alert">
                         <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                         {{ message }}
@@ -92,7 +94,7 @@
     {% endwith %}
 
     <div class="container-fluid">
-        {% block body %}
+        {%- block body %}
         {% endblock %}
     </div>
 

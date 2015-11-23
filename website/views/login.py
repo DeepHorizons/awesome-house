@@ -67,18 +67,6 @@ def load_user(login_name):
     return User.get(login_name)
 
 
-# TODO make this the registration page
-@app.route('/login')
-def login():
-    return '''
-        <form action="/login/check" method="post">
-            <p>Username: <input name="username" type="text"></p>
-            <p>Password: <input name="password" type="password"></p>
-            <input type="submit">
-        </form>
-    '''
-
-
 @app.route('/login/check', methods=['POST'])
 def login_check():
     flask_error_message = "Username or password incorrect"

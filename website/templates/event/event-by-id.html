@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% import 'include_html/macros.html' as macros %}
+{% import 'include_html/new_todo_modal.html' as todo_macros %}
+
+{% block extra_header %}
+<link rel="stylesheet" type="text/css" href="/static/css/bootstrap-datetimepicker.min.css">
+{% endblock %}
+
+{% block body %}
+{% if error %}
+    {{ error }}
+{% else %}
+
+    <div class="row">
+        <div class="col-xs-12 col-sm-8 col-md-6">
+            <div class="table-responsive">
+                {% if event.deleted %}<del>{% endif %}
+                <h1>{{ event.name }}</h1>
+                <h2><small>{{ event.date_time }}</small></h2>
+                <br>
+                <pre>{{ event.description }}</pre>
+                <div class="row" style="width: 100%">
+                    {% if event.todos.count() %}
+                    <div class="col-xs-12">
+                        <div class="table-responsive">
+                            {{ macros.todo_list(event.todos, current_user) }}
+                        </div>
+                    </div>
+                    {% else %}
+                        <div style="margin-left: 15px">No Tasks</div><!-- The style is needed because otherwise the row style cuts the text off -->
+                        <br>
+                        <br>
+                    {% endif %}
+                </div>
+                {% if event.deleted %}</del>{% endif %}
+                <button class="btn btn-default" data-toggle="modal" data-target="#editEvent">Edit</button>
+                <button class="btn btn-danger" data-toggle="modal" data-target="#deleteEvent">{% if event.deleted %}Un-Delete{% else %}Delete{% endif %}</button>
+                <button class="btn btn-default" data-toggle="modal" data-target="#addTodo">Add New Todo</button>
+            </div>
+        </div>
+    </div>
+
+
+<!-- edit event modal -->
+<div class="modal fade" id="editEvent" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Edit Event</h4>
+      </div>
+      <div class="modal-body">
+          <form class="form-group" action="/events/by-id/{{event.id}}" method="POST">
+              <input type="hidden" name="_method" value="PUT" />
+              {{ event_form.hidden_tag() }}
+              {{ macros.gen_group(event_form.name) }}
+
+              <div class="form-group {% if event_form.date.errors %}has-error{% endif %}">
+                  {%- for error in event_form.date.errors %}
+                  <label class="control-label">{{ error }}</label>
+                  {%- else %}
+                  {{ event_form.date.label() }}
+                  {%- endfor %}
+
+                  <div class='input-group date' id='datetimepicker1'>
+                      {{ event_form.date(class="form-control") }}
+                      <span class="input-group-addon">
+                          <span class="glyphicon glyphicon-calendar"></span>
+                      </span>
+                  </div>
+              </div>
+
+              {{ macros.gen_group(event_form.description) }}
+              <button type="submit" class="btn btn-default">Submit</button>
+          </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- delete event modal -->
+<div class="modal fade" id="deleteEvent" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Delete Event</h4>
+      </div>
+      <div class="modal-body">
+          <form class="form-group" action="/events/by-id/{{event.id}}" method="POST">
+              {{ event_form.hidden_tag() }}
+              <input type="hidden" name="_method" value="DELETE" />
+              {% if event.deleted %}
+                <h4>Are you sure you wish to add this event back?</h4>
+              {% else %}
+                <h4>Are you sure you wish to delete this event?<br>
+                    (You can still get it back)</h4>
+              {% endif %}
+              <button class="btn btn-danger" type="submit">Yes</button>
+          </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- add task modal -->
+{{ todo_macros.new_todo_modal(todo_form, "/events/by-id/{}".format(event.id), event.id) }}
+
+{% endif %}
+{% endblock %}
+
+{% block extrajs %}
+<script src="/static/js/todo.js"></script>
+<script type="text/javascript">
+    //Open the modal if there is an error
+    var formErrors = {% if event_form.errors %}true{% else %}false{% endif %};
+    $(document).ready(function() {
+        if (formErrors) {
+            $('.modal').modal('show');
+        }
+    });
+</script>
+<script src="/static/js/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript">
+    $("#datetimepicker1").datetimepicker({
+        pickerPosition: "bottom-left",
+        showMeridian: true,
+        autoclose: true,
+    });
+</script>
+{% endblock %}
