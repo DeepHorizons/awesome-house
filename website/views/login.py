@@ -56,25 +56,6 @@ def logout():
     return flask.redirect(flask.url_for('index'))
 
 
-def format_phone_number(phone_number):
-    """
-    Takes in a phone number and formats it with hyphens
-    Can accept 10 or 11 digit numbers
-    TODO make the formatter accept different types of numbers
-
-    :param phone_number: string of a US phone number
-    :return: a string of a properly formated number
-    """
-    phone_number = phone_number.replace('-', '')
-    phone_number = phone_number.replace(' ', '')
-    if len(phone_number) == 10:
-        return '-'.join((phone_number[:3], phone_number[3:6], phone_number[6:]))
-    elif len(phone_number) == 11:
-        return '-'.join((phone_number[0], phone_number[1:4], phone_number[4:7], phone_number[7:]))
-    else:
-        return phone_number
-
-
 @app.route('/login/settings', methods=['GET', 'POST'])
 @flask_login.login_required
 def login_settings():
@@ -84,7 +65,7 @@ def login_settings():
             name = form.name.data
             email = form.email.data
             phone_number = form.phone_number.data
-            phone_number = format_phone_number(phone_number or '')
+            phone_number = login_functions.format_phone_number(phone_number or '')
             email_me = form.email_me.data
 
             logger.debug('Updating user settings: Login name: {} |Name: {} |email: {} |Phone: {} |email me?: {}'.format(flask_login.current_user.login_name, name, email, phone_number, email_me))
@@ -92,7 +73,7 @@ def login_settings():
             user = models.User.get(models.User.login_name == flask_login.current_user.login_name)
             user.name = name
             user.email = email
-            user.phone_number = format_phone_number(phone_number)
+            user.phone_number = login_functions.format_phone_number(phone_number)
             user.email_me = email_me
             user.save()
 

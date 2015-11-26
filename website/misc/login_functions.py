@@ -95,3 +95,22 @@ def admin_required(func):
             return app.login_manager.unauthorized()
         return func(*args, **kwargs)
     return decorated_view
+
+
+def format_phone_number(phone_number):
+    """
+    Takes in a phone number and formats it with hyphens
+    Can accept 10 or 11 digit numbers
+    TODO make the formatter accept different types of numbers
+
+    :param phone_number: string of a US phone number
+    :return: a string of a properly formated number
+    """
+    phone_number = phone_number.replace('-', '')
+    phone_number = phone_number.replace(' ', '')
+    if len(phone_number) == 10:
+        return '-'.join((phone_number[:3], phone_number[3:6], phone_number[6:]))
+    elif len(phone_number) == 11:
+        return '-'.join((phone_number[0], phone_number[1:4], phone_number[4:7], phone_number[7:]))
+    else:
+        return phone_number
