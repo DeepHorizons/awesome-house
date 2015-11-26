@@ -142,7 +142,6 @@ def todo_by_id(todo_id):
 @flask_login.login_required
 def todo_status():
     """Ajax request"""
-    print(flask.request.form)
     try:
         task_id = int(flask.request.form['id'])
         status = True if flask.request.form['status'] == 'true' else False
