@@ -13,9 +13,4 @@ app = flask.Flask(__name__)
 app.config.from_object(__name__)
 flask_wtf.csrf.CsrfProtect(app)
 
-import views.index
-import views.electricity
-import views.events
-import views.music
-import views.bills
-import views.login
+import views
