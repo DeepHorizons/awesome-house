@@ -50,8 +50,8 @@ def login_check():
 @app.route('/logout')
 def logout():
     if flask_login.current_user.is_authenticated:
-        flask_login.logout_user()
         logger.debug('user {} Logging out'.format(flask_login.current_user.login_name))
+        flask_login.logout_user()
         flask.flash('Successfully logged out', category='success')
     return flask.redirect(flask.url_for('index'))
 
