@@ -52,7 +52,7 @@ def events():
     events = models.Event.select().order_by(models.Event.date_time.asc()).where(models.Event.date_time >= datetime.datetime.combine(datetime.date.today(), datetime.time()))
     todos = models.Todo.select()
     events_with_todos = peewee.prefetch(events, todos)
-    return flask.render_template('events.html', title='Events', events=events_with_todos, event_form=newEventForm)
+    return flask.render_template('event/events.html', title='Events', events=events_with_todos, event_form=newEventForm)
 
 
 @app.route('/events/by-id/<int:event_id>', methods=['GET', 'POST'])
@@ -109,7 +109,7 @@ def todos():
             if next:
                 return redirect_back('/todos')
     all_todos = models.Todo.select()
-    return flask.render_template('todo.html', title='Todo', todos=all_todos)
+    return flask.render_template('event/todo.html', title='Todo', todos=all_todos)
 
 
 @app.route('/todos/by-id/<int:todo_id>', methods=['GET', 'POST'])
