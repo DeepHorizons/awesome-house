@@ -30,15 +30,18 @@ def login_check():
                 password = login_functions.get_password_hash(form.password.data, user.salt)
                 if password == user.password:
                     flask_login.login_user(user)
-                    logger.debug('Successfully logged in user {}'.format(login_name))
+                    logger.debug('User {}; Successfully logged in '.format(login_name))
                     flask.flash('Successfully logged in', category='success')
                 else:
                     flask.flash(flask_error_message, category='danger')
             else:
+                logger.debug('User {} attempted to login without being authorized'.format(login_name))
                 flask.flash('Your account has not yet been authorized. Please bug someone about it.')
         else:
+            logger.debug('User does not exist: {}'.format(login_name))
             flask.flash(flask_error_message, category='danger')
     else:
+        logger.debug('Form is not valid: {}'.format(form.login_name.data))
         flask.flash(flask_error_message, category='danger')
 
     return flask.redirect(flask.url_for('index'))
@@ -48,6 +51,7 @@ def login_check():
 def logout():
     if flask_login.current_user.is_authenticated:
         flask_login.logout_user()
+        logger.debug('user {} Logging out'.format(flask_login.current_user.login_name))
         flask.flash('Successfully logged out', category='success')
     return flask.redirect(flask.url_for('index'))
 
@@ -96,7 +100,7 @@ def login_settings():
             return flask.redirect('/login/settings')
         else:
             # Form not valid
-            logger.debug('Invalid form data')
+            logger.debug('User {} invalid form data'.format(flask_login.current_user.login_name))
             flask.flash('Invalid data submitted', category='danger')
     elif flask.request.method == 'GET':
         form.name.data = flask_login.current_user.name
@@ -173,11 +177,11 @@ def login_admin():
                 models.User.update(authorized=False).where(models.User.id.not_in(authorized_list_ids) &
                                                            (models.User.admin == False)).execute()
 
-                logger.debug('{} updated the authorized list;\n{} authorized'.format(flask_login.current_user.name,
+                logger.debug('User {} updated the authorized list;\n{} authorized'.format(flask_login.current_user.login_name,
                                                                                      authorized_list_ids))
                 flask.flash('Users statuses changed', category='success')
             else:
-                logger.debug('Error on Admin form;\n {}'.format(form.errors))
+                logger.debug('User {}; Error on Admin form;\n {}'.format(flask_login.current_user.login_name, form.errors))
             flask.redirect(login_admin)
 
         # On other requests
