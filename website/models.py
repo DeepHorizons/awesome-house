@@ -78,7 +78,7 @@ class Bill(BaseModel):
 class User(Invitee):
     login_name = peewee.CharField(unique=True, max_length=64)
     password = peewee.FixedCharField(max_length=64)
-    salt = peewee.FixedCharField(max_length=32)
+    salt = peewee.FixedCharField(max_length=32)  # This should be half the password max length
     email_me = peewee.BooleanField(default=True)
     authorized = peewee.BooleanField(default=False)
     admin = peewee.BooleanField(default=False)
