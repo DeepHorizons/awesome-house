@@ -8,30 +8,15 @@ import logging
 import datetime
 import peewee
 import flask_login
-from urllib.parse import urlparse, urljoin
-from flask import request, url_for
+from flask import request
 
 # Local imports
 from __init__ import app
 import models
 import forms.event_forms
+import misc.event_functions as event_functions
 
 logger = logging.getLogger(__name__)
-
-
-# http://flask.pocoo.org/snippets/62/
-def is_safe_url(target):
-    ref_url = urlparse(request.host_url)
-    test_url = urlparse(urljoin(request.host_url, target))
-    return test_url.scheme in ('http', 'https') and \
-           ref_url.netloc == test_url.netloc
-
-
-def redirect_back(endpoint, **values):
-    target = request.form['next']
-    if not target or not is_safe_url(target):
-        target = url_for(endpoint, **values)
-    return flask.redirect(target)
 
 
 @app.route('/events', methods=['GET', 'POST'])
@@ -111,7 +96,7 @@ def todos():
             flask.flash('Successfully added todo', 'success')
             next = request.form['next']
             if next:
-                return redirect_back('/todos')
+                return event_functions.redirect_back('/todos')
     all_todos = models.Todo.select()
     return flask.render_template('event/todo.html', title='Todo', todos=all_todos)
 
