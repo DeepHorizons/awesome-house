@@ -83,3 +83,15 @@ def gen_password(password):
     salt = base64.b64encode(os.urandom(models.User.salt.max_length)).decode()
     password = get_password_hash(password, salt)
     return password, salt
+
+
+def admin_required(func):
+    def decorated_view(*args, **kwargs):
+        if app.login_manager._login_disabled:
+            return func(*args, **kwargs)
+        elif not flask_login.current_user.is_authenticated:
+            return app.login_manager.unauthorized()
+        elif not flask_login.current_user.is_admin:  # TODO somehow use the flask_login.login_required function
+            return app.login_manager.unauthorized()
+        return func(*args, **kwargs)
+    return decorated_view
