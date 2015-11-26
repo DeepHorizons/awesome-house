@@ -46,7 +46,7 @@ def event_by_id(event_id):
     try:
         event = models.Event.get(models.Event.id == event_id)
     except peewee.DoesNotExist:
-        logger.debug('User {}; Attempted access to event ID {}'.format(flask_login.current_user.login_name, event_id))
+        logger.warning('User {}; Attempted access to event ID {}'.format(flask_login.current_user.login_name, event_id))
         return flask.render_template('event/event-by-id.html', error='Event id {} does not exit'.format(event_id))
 
     if flask.request.method == 'POST':
@@ -61,7 +61,7 @@ def event_by_id(event_id):
                 flask.flash('Event updated', 'success')
                 logger.debug('User {}; updated event ID {}'.format(flask_login.current_user.login_name, event_id))
             else:
-                logger.debug('User {} attempted to update event ID {} but it failed for some reason'.format(flask_login.current_user.login_name, event_id))
+                logger.error('User {} attempted to update event ID {} but it failed for some reason'.format(flask_login.current_user.login_name, event_id))
                 flask.flash('Could not update event', 'danger')
         elif method == 'DELETE':
             if event.deleted:
@@ -107,7 +107,7 @@ def todo_by_id(todo_id):
     try:
         todo = models.Todo.get(models.Todo.id == todo_id)
     except peewee.DoesNotExist:
-        logger.debug('User {} attempted to access todo ID {} but it does not exist'.format(flask_login.current_user.login_name, todo_id))
+        logger.warning('User {} attempted to access todo ID {} but it does not exist'.format(flask_login.current_user.login_name, todo_id))
         return flask.render_template('event/todo-by-id.html', error='Todo id {} does not exit'.format(todo_id))
 
     if flask.request.method == 'POST':
@@ -122,7 +122,7 @@ def todo_by_id(todo_id):
                 logger.debug('User {} updated todo ID {}'.format(flask_login.current_user.login_name, todo_id))
             else:
                 flask.flash('Could not update event', 'danger')
-                logger.debug('User {} attempted to updated todo ID {} but failed'.format(flask_login.current_user.login_name, todo_id))
+                logger.error('User {} attempted to updated todo ID {} but failed'.format(flask_login.current_user.login_name, todo_id))
         elif method == 'DELETE':
             if todo.deleted:
                 todo.deleted = False
@@ -146,7 +146,7 @@ def todo_status():
         task_id = int(flask.request.form['id'])
         status = True if flask.request.form['status'] == 'true' else False
     except KeyError:
-        logger.debug('Key error: {0}'.format(flask.request.form))
+        logger.error('Key error: {0}'.format(flask.request.form))
         return flask.jsonify()
 
     logger.debug('User {} updating todo ID {} to status {}'.format(flask_login.current_user.login_name, task_id, status))

@@ -35,13 +35,13 @@ def login_check():
                 else:
                     flask.flash(flask_error_message, category='danger')
             else:
-                logger.debug('User {} attempted to login without being authorized'.format(login_name))
+                logger.warning('User {} attempted to login without being authorized'.format(login_name))
                 flask.flash('Your account has not yet been authorized. Please bug someone about it.')
         else:
-            logger.debug('User does not exist: {}'.format(login_name))
+            logger.warning('User does not exist: {}'.format(login_name))
             flask.flash(flask_error_message, category='danger')
     else:
-        logger.debug('Form is not valid: {}'.format(form.login_name.data))
+        logger.warning('Form is not valid: {}'.format(form.login_name.data))
         flask.flash(flask_error_message, category='danger')
 
     return flask.redirect(flask.url_for('index'))
@@ -81,7 +81,7 @@ def login_settings():
             return flask.redirect('/login/settings')
         else:
             # Form not valid
-            logger.debug('User {} invalid form data'.format(flask_login.current_user.login_name))
+            logger.warning('User {} invalid form data'.format(flask_login.current_user.login_name))
             flask.flash('Invalid data submitted', category='danger')
     elif flask.request.method == 'GET':
         form.name.data = flask_login.current_user.name
@@ -124,7 +124,7 @@ def login_register():
                     problem_field = str(e)[str(e).find('.')+1:]
 
                     if problem_field in form.__dict__:
-                        logger.debug('Problem was {}'.format(problem_field))
+                        logger.warning('Problem was {}'.format(problem_field))
                         getattr(form, problem_field).errors.append('This entry already exists, please choose a new one')
                     else:
                         raise e
@@ -162,7 +162,7 @@ def login_admin():
                                                                                      authorized_list_ids))
                 flask.flash('Users statuses changed', category='success')
             else:
-                logger.debug('User {}; Error on Admin form;\n {}'.format(flask_login.current_user.login_name, form.errors))
+                logger.warning('User {}; Error on Admin form;\n {}'.format(flask_login.current_user.login_name, form.errors))
             flask.redirect(login_admin)
 
         # On other requests
