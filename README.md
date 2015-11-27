@@ -23,6 +23,13 @@ The first step is to initialize the database. This can be done by executing mode
 cd website
 python models.py
 ```
+
+Next, set an environmental variable of `AWESOME_HOUSE_WEBSITE_CONFIG_SETTINGS` to point to a configuration file containing your settings.  
+`export AWESOME_HOUSE_WEBSITE_CONFIG_SETTINGS=/path/to/config.py` if on linux  
+`set AWESOME_HOUSE_WEBSITE_CONFIG_SETTINGS=\path\to\config.py` if on windows  
+A sample config has been provided that sets the site to run in production mode.
+Note that you **must** change the `SECRET_KEY` key for security reasons.
+
 Then, simply run the run.py file in the website folder.  
 `python website/run.py`  
 or  

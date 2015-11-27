@@ -15,4 +15,4 @@ if __name__ == '__main__':
     else:
         logging.basicConfig(level=logging.INFO, format='%(asctime)s : %(name)s : %(levelname)s : %(message)s')
         logger.info('Running in production mode')
-    app.run(host='0.0.0.0', threaded=True)
+    app.run(host=app.config.get('HOST', None), port=app.config.get('PORT', None), threaded=True)
