@@ -17,7 +17,7 @@
         </tr>
         {% endif %}
         {% else %}
-        {{ else }}
+        {{ else|safe }}
         {%- endfor %}
     </tbody>
 </table>
