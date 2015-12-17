@@ -112,8 +112,18 @@ atexit.register(after_request_handler, db)
 
 def create_tables():
     before_request_handler(db)
-    db.create_tables([Electricity, Event, Todo, Bill, Invitee, EventInvitee, User, EventUser], True)
+    db.create_tables(find_tables(), True)
     return
+
+
+def find_tables(base=BaseModel):
+    """Find all tables that inherit from the given table including sub-sub
+    base: class: teh table root to start with"""
+    subclasses = base.__subclasses__()
+    if not subclasses:
+        return subclasses
+    sub_subclasses = [item for subclass in subclasses for item in find_tables(subclass)]
+    return subclasses + sub_subclasses
 
 
 if __name__ == '__main__':
