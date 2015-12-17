@@ -89,6 +89,16 @@ class EventUser(BaseModel):
     invitee = peewee.ForeignKeyField(User)
 
 
+class PermissionType(BaseModel):
+    name = peewee.CharField(unique=True)
+    description = peewee.CharField(max_length=4096)
+
+
+class Permission(BaseModel):
+    user = peewee.ForeignKeyField(User, related_name='permissions')
+    permission = peewee.ForeignKeyField(PermissionType, related_name='permitted_users')
+
+
 # -----------Helper functions-----------
 def before_request_handler(database=db):
     logger.debug('Opening connection to DB')
@@ -126,11 +136,17 @@ def find_tables(base=BaseModel):
     return subclasses + sub_subclasses
 
 
+def add_necessary_data():
+    PermissionType.get_or_create(name='authorized', description="A user who is authorized to use the site")
+    PermissionType.get_or_create(name='admin', description="A user who has admin privileges, or manages authorized users")
+
+
 if __name__ == '__main__':
     import datetime
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s : %(name)s : %(levelname)s : %(message)s')
     before_request_handler()
     create_tables()
+    add_necessary_data()
 
     def fill_tables_with_dummy_data():
         # -----Electricity-----
