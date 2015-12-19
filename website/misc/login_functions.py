@@ -36,8 +36,6 @@ class User(flask_login.UserMixin):
             self.password = user.password
             self.salt = user.salt
             self.phone_number = user.phone_number
-            self.authorized = user.authorized
-            self.admin = user.admin
         return
 
     @classmethod
@@ -47,14 +45,19 @@ class User(flask_login.UserMixin):
         except LookupError:
             return None
 
-    @property
-    def is_admin(self):
-        return self.admin
-
-    @property
-    def is_authorized(self):
-        return self.authorized
-
+# Add the is_ property for all the permission types
+for p_type in models.PermissionType.select():
+    def func(self):
+        try:
+            models.Permission.select().join(models.PermissionType).switch(models.Permission).join(models.User).where(
+                    (models.PermissionType.name == p_type.name) & (models.User.login_name == self.login_name)
+            ).get()
+        except peewee.DoesNotExist:
+            return False
+        else:
+            return True
+    prop_func = property(func)
+    setattr(User, 'is_' + p_type.name, prop_func)
 
 @login_manager.user_loader
 def load_user(login_name):

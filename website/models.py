@@ -80,13 +80,21 @@ class User(Invitee):
     password = peewee.FixedCharField(max_length=64)
     salt = peewee.FixedCharField(max_length=32)  # This should be half the password max length
     email_me = peewee.BooleanField(default=True)
-    authorized = peewee.BooleanField(default=False)
-    admin = peewee.BooleanField(default=False)
 
 
 class EventUser(BaseModel):
     event = peewee.ForeignKeyField(Event)
     invitee = peewee.ForeignKeyField(User)
+
+
+class PermissionType(BaseModel):
+    name = peewee.CharField(unique=True)
+    description = peewee.CharField(max_length=4096)
+
+
+class Permission(BaseModel):
+    user = peewee.ForeignKeyField(User, related_name='permissions')
+    permission = peewee.ForeignKeyField(PermissionType, related_name='permitted_users')
 
 
 # -----------Helper functions-----------
@@ -112,15 +120,34 @@ atexit.register(after_request_handler, db)
 
 def create_tables():
     before_request_handler(db)
-    db.create_tables([Electricity, Event, Todo, Bill, Invitee, EventInvitee, User, EventUser], True)
+    db.create_tables(find_tables(), True)
     return
 
+
+def find_tables(base=BaseModel):
+    """Find all tables that inherit from the given table including sub-sub
+    base: class: teh table root to start with"""
+    subclasses = base.__subclasses__()
+    if not subclasses:
+        return subclasses
+    sub_subclasses = [item for subclass in subclasses for item in find_tables(subclass)]
+    return subclasses + sub_subclasses
+
+
+def add_necessary_data():
+    PermissionType.get_or_create(name='authorized', description="A user who is authorized to use the site")
+    PermissionType.get_or_create(name='admin', description="A user who has admin privileges, or manages authorized users")
+
+
+# Global
+PERMISSION_TYPE = {p.name: p for p in PermissionType.select()}
 
 if __name__ == '__main__':
     import datetime
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s : %(name)s : %(levelname)s : %(message)s')
     before_request_handler()
     create_tables()
+    add_necessary_data()
 
     def fill_tables_with_dummy_data():
         # -----Electricity-----
@@ -250,10 +277,11 @@ if __name__ == '__main__':
                       salt=salt.decode(),
                       password=password,
                       email_me=False,
-                      email="test@test.info",
-                      authorized=True,
-                      admin=True)
+                      email="test@test.info")
         user_1.save()
+        Permission(user=user_1, permission=PERMISSION_TYPE['admin']).save()
+        Permission(user=user_1, permission=PERMISSION_TYPE['authorized']).save()
+
         salt = base64.b64encode(os.urandom(32))
         password = hashlib.sha256('password2'.encode() + salt).hexdigest()
         user_2 = User(name='User 2',
@@ -262,9 +290,10 @@ if __name__ == '__main__':
                       password=password,
                       email_me=False,
                       email="test2@test.info",
-                      phone_number='234-5678',
-                      authorized=True)
+                      phone_number='234-5678')
         user_2.save()
+        Permission(user=user_2, permission=PERMISSION_TYPE['authorized']).save()
+
         salt = base64.b64encode(os.urandom(32))
         password = hashlib.sha256('password3'.encode() + salt).hexdigest()
         user_3 = User(name='User 3',
@@ -273,9 +302,10 @@ if __name__ == '__main__':
                       password=password,
                       email_me=True,
                       email="test3@test.moe",
-                      phone_number='234-5678',
-                      authorized=True)
+                      phone_number='234-5678')
         user_3.save()
+        Permission(user=user_3, permission=PERMISSION_TYPE['authorized']).save()
+
         salt = base64.b64encode(os.urandom(32))
         password = hashlib.sha256('password4'.encode() + salt).hexdigest()
         user_4 = User(name='User 4',
