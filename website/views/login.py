@@ -139,7 +139,7 @@ def login_register():
 
 
 @app.route('/login/admin', methods=['GET', 'POST'])
-@flask_login.login_required
+@login_functions.admin_required
 def login_admin():
     if flask_login.current_user.is_admin:
         if flask.request.method == 'POST':
@@ -154,9 +154,15 @@ def login_admin():
                     authorized_list_ids.append(user_id)
 
                 # Update Authorized list
-                models.User.update(authorized=True).where(models.User.id.in_(authorized_list_ids)).execute()
-                models.User.update(authorized=False).where(models.User.id.not_in(authorized_list_ids) &
-                                                           (models.User.admin == False)).execute()
+                with models.db.atomic():
+                    for user_id in authorized_list_ids:
+                        models.Permission.get_or_create(user=user_id, permission=models.PERMISSION_TYPE['authorized'])
+                    admins = [permission.user for permission in
+                              models.Permission.select(models.Permission, models.User).join(models.User).where(
+                                      models.Permission.permission == models.PERMISSION_TYPE['admin'])
+                              ]
+                    models.Permission.delete().where(models.Permission.user.not_in(authorized_list_ids) &
+                                                     models.Permission.user.not_in(admins)).execute()
 
                 logger.debug('User {} updated the authorized list;\n{} authorized'.format(flask_login.current_user.login_name,
                                                                                      authorized_list_ids))
@@ -166,13 +172,18 @@ def login_admin():
             flask.redirect(login_admin)
 
         # On other requests
-        users = models.User.select().order_by(models.User.authorized).dicts()
+        users = models.User.select()
+        permissions = models.Permission.select(models.Permission, models.User, models.PermissionType).\
+            join(models.User).switch(models.Permission).join(models.PermissionType)
         users_forms = [forms.login_forms.UserForm()]
         for user in users:
-            tmpForm = forms.login_forms.UserForm(None, prefix=str(user['id'])+'_')  # Adds <id>_ to all data for later retrieval
-            for field in tmpForm:
-                field.data = user.get(field.name[field.name.find('_')+1:])  # Get properties off of the user
+            tmpForm = forms.login_forms.UserForm(None, prefix=str(user.id)+'_')  # Adds <id>_ to all data for later retrieval
+            tmpForm.name.data = user.name
+            tmpForm.admin.data = True if user in (p.user for p in permissions if p.permission == models.PERMISSION_TYPE['admin']) else False
+            tmpForm.authorized.data = True if user in (p.user for p in permissions if p.permission == models.PERMISSION_TYPE['authorized']) else False
             users_forms.append(tmpForm)
+
+        users_forms.sort(key=lambda x: x.authorized.data)
 
         return flask.render_template('admin.html', forms=users_forms)
 

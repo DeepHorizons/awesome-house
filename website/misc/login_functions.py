@@ -36,8 +36,6 @@ class User(flask_login.UserMixin):
             self.password = user.password
             self.salt = user.salt
             self.phone_number = user.phone_number
-            self.authorized = user.authorized
-            self.admin = user.admin
         return
 
     @classmethod
@@ -49,11 +47,25 @@ class User(flask_login.UserMixin):
 
     @property
     def is_admin(self):
-        return self.admin
+        try:
+            models.Permission.select().join(models.PermissionType).switch(models.Permission).join(models.User).where(
+                    (models.PermissionType.name == 'admin') & (models.User.login_name == self.login_name)
+            ).get()
+        except peewee.DoesNotExist:
+            return False
+        else:
+            return True
 
     @property
     def is_authorized(self):
-        return self.authorized
+        try:
+            models.Permission.select().join(models.PermissionType).switch(models.Permission).join(models.User).where(
+                    (models.PermissionType.name == 'authorized') & (models.User.login_name == self.login_name)
+            ).get()
+        except peewee.DoesNotExist:
+            return False
+        else:
+            return True
 
 
 @login_manager.user_loader
