@@ -1,5 +1,6 @@
 import flask_wtf
 import wtforms
+import models
 
 
 def phone_number_validator(form, field):
@@ -47,5 +48,11 @@ class UserForm(flask_wtf.Form):
     """ Used for the admin page
     """
     name = wtforms.StringField(description='The name you prefer to go by')
-    admin = wtforms.BooleanField(description='Is the user an admin?')
-    authorized = wtforms.BooleanField(description='Is the user authorized?')
+
+
+try:
+    # Set the permissions on the form
+    for p_type in models.PermissionType.select():
+        setattr(UserForm, p_type.name, wtforms.BooleanField(description=p_type.description))
+except:
+    pass
