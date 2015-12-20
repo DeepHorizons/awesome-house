@@ -50,6 +50,9 @@ class UserForm(flask_wtf.Form):
     name = wtforms.StringField(description='The name you prefer to go by')
 
 
-# Set the permissions on the form
-for p_type in models.PermissionType.select():
-    setattr(UserForm, p_type.name, wtforms.BooleanField(description=p_type.description))
+try:
+    # Set the permissions on the form
+    for p_type in models.PermissionType.select():
+        setattr(UserForm, p_type.name, wtforms.BooleanField(description=p_type.description))
+except:
+    pass

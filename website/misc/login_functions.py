@@ -59,9 +59,12 @@ def gen_func(permission):
         else:
             return True
     return func
-for p_type in models.PermissionType.select():
-    prop_func = property(gen_func(p_type))
-    setattr(User, 'is_' + p_type.name, prop_func)
+try:
+    for p_type in models.PermissionType.select():
+        prop_func = property(gen_func(p_type))
+        setattr(User, 'is_' + p_type.name, prop_func)
+except:
+    pass
 
 
 @login_manager.user_loader

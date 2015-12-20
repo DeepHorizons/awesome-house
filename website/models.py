@@ -140,7 +140,10 @@ def add_necessary_data():
 
 
 # Global
-PERMISSION_TYPE = {p.name: p for p in PermissionType.select()}
+try:
+    PERMISSION_TYPE = {p.name: p for p in PermissionType.select()}
+except peewee.OperationalError:
+    pass
 
 if __name__ == '__main__':
     import datetime
@@ -148,6 +151,7 @@ if __name__ == '__main__':
     before_request_handler()
     create_tables()
     add_necessary_data()
+    PERMISSION_TYPE = {p.name: p for p in PermissionType.select()}  # Make sure it exists if this is the first time
 
     def fill_tables_with_dummy_data():
         # -----Electricity-----
