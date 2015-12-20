@@ -45,19 +45,26 @@ class User(flask_login.UserMixin):
         except LookupError:
             return None
 
+
 # Add the is_ property for all the permission types
-for p_type in models.PermissionType.select():
+def gen_func(permission):
+    """Generate a function that is used to check for that specific permission"""
+    print('making function for {}'.format(permission.name))
     def func(self):
+        print('checking {}'.format(permission.name))
         try:
             models.Permission.select().join(models.PermissionType).switch(models.Permission).join(models.User).where(
-                    (models.PermissionType.name == p_type.name) & (models.User.login_name == self.login_name)
+                    (models.Permission.permission == permission) & (models.User.login_name == self.login_name)
             ).get()
         except peewee.DoesNotExist:
             return False
         else:
             return True
-    prop_func = property(func)
+    return func
+for p_type in models.PermissionType.select():
+    prop_func = property(gen_func(p_type))
     setattr(User, 'is_' + p_type.name, prop_func)
+
 
 @login_manager.user_loader
 def load_user(login_name):
