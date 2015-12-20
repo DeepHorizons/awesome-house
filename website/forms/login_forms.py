@@ -56,3 +56,8 @@ try:
         setattr(UserForm, p_type.name, wtforms.BooleanField(description=p_type.description))
 except:
     pass
+
+
+class PaymentForm(flask_wtf.Form):
+    token = wtforms.StringField()
+

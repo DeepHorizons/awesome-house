@@ -69,17 +69,30 @@ class Todo(BaseModel):
     description = peewee.CharField(default="")
 
 
-class Bill(BaseModel):
-    due = peewee.DateField()
-    name = peewee.CharField()
-    amount = peewee.FloatField()
-
-
 class User(Invitee):
     login_name = peewee.CharField(unique=True, max_length=64)
     password = peewee.FixedCharField(max_length=64)
     salt = peewee.FixedCharField(max_length=32)  # This should be half the password max length
     email_me = peewee.BooleanField(default=True)
+
+
+class Bill(BaseModel):
+    due = peewee.DateField()
+    name = peewee.CharField()
+    amount = peewee.FloatField()
+    maintainer = peewee.ForeignKeyField(User)
+    description = peewee.CharField(default="", max_length=4096)
+
+
+class PaymentMethod(BaseModel):
+    user = peewee.ForeignKeyField(User, related_name='paymentMethods')
+    token = peewee.CharField(null=True, default='')
+
+
+class Charges(BaseModel):
+    bill_id = peewee.ForeignKeyField(Bill)
+    payment_id = peewee.ForeignKeyField(PaymentMethod)
+    paid = peewee.BooleanField(default=False)
 
 
 class EventUser(BaseModel):
