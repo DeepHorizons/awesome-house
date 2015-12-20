@@ -49,9 +49,7 @@ class User(flask_login.UserMixin):
 # Add the is_ property for all the permission types
 def gen_func(permission):
     """Generate a function that is used to check for that specific permission"""
-    print('making function for {}'.format(permission.name))
     def func(self):
-        print('checking {}'.format(permission.name))
         try:
             models.Permission.select().join(models.PermissionType).switch(models.Permission).join(models.User).where(
                     (models.Permission.permission == permission) & (models.User.login_name == self.login_name)
