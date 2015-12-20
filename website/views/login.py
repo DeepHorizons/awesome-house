@@ -179,8 +179,9 @@ def login_admin():
         for user in users:
             tmpForm = forms.login_forms.UserForm(None, prefix=str(user.id)+'_')  # Adds <id>_ to all data for later retrieval
             tmpForm.name.data = user.name
-            tmpForm.admin.data = True if user in (p.user for p in permissions if p.permission == models.PERMISSION_TYPE['admin']) else False
-            tmpForm.authorized.data = True if user in (p.user for p in permissions if p.permission == models.PERMISSION_TYPE['authorized']) else False
+            for permission in models.PERMISSION_TYPE:
+                value = True if user in (p.user for p in permissions if p.permission == models.PERMISSION_TYPE[permission]) else False
+                setattr(getattr(tmpForm, permission), 'data', value)
             users_forms.append(tmpForm)
 
         users_forms.sort(key=lambda x: x.authorized.data)

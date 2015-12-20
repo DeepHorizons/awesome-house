@@ -7,13 +7,21 @@
     <table class="table table-condensed">
         <tr>
             <th>User name</th>
-            <th>Authorized</th>
+            {% for field in forms[0] if (field.name.find('name') == -1) and
+                                        (field.name.find('admin') == -1) and
+                                        (field.name.find('csrf_token') == -1)%}
+            <th>{{ field.name.capitalize() }}</th>
+            {% endfor %}
         </tr>
         {%- for form in forms[1:] %}
         {%- if form.admin.data == False %} {# Don't list admins on this page. Don't want an admin disabling another admin #}
         <tr>
             <td>{{ form.name.data }}</td>
-            <td>{{ form.authorized() }}</td>
+            {% for field in form if (field.name.find('name') == -1) and
+                                    (field.name.find('admin') == -1) and
+                                    (field.name.find('csrf_token') == -1)%}
+            <td>{{ field() }}</td>
+            {% endfor %}
         </tr>
         {%- endif -%}
         {% endfor -%}
