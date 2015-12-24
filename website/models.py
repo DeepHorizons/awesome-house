@@ -150,6 +150,16 @@ def find_tables(base=BaseModel):
 def add_necessary_data():
     PermissionType.get_or_create(name='authorized', description="A user who is authorized to use the site")
     PermissionType.get_or_create(name='admin', description="A user who has admin privileges, or manages authorized users")
+    PermissionType.get_or_create(name='bills', description="A user who pays bills")
+
+
+def add_admin(user):
+    for permission in PERMISSION_TYPE:
+        Permission.get_or_create(user=user, permission=PERMISSION_TYPE[permission])
+
+
+def remove_admin(user):
+    Permission.delete().where(Permission.user == user).execute()
 
 
 # Global
@@ -272,17 +282,6 @@ if __name__ == '__main__':
         Todo(task="Event yesterday task",
              event=event_yesterday).save()
 
-        # -----Bill-----
-        Bill(due=datetime.date.today(),
-             name="Electricity",
-             amount="66.34").save()
-        Bill(due=datetime.date.today() + datetime.timedelta(3),
-             name="Water",
-             amount="25").save()
-        Bill(due=datetime.date.today() - datetime.timedelta(3),
-             name="Past Bill",
-             amount="123").save()
-
         # -----User-----
         import os
         import hashlib
@@ -296,8 +295,7 @@ if __name__ == '__main__':
                       email_me=False,
                       email="test@test.info")
         user_1.save()
-        Permission(user=user_1, permission=PERMISSION_TYPE['admin']).save()
-        Permission(user=user_1, permission=PERMISSION_TYPE['authorized']).save()
+        add_admin(user_1)
 
         salt = base64.b64encode(os.urandom(32))
         password = hashlib.sha256('password2'.encode() + salt).hexdigest()
@@ -338,5 +336,20 @@ if __name__ == '__main__':
         EventUser(event=event_today, invitee=user_3).save()
         EventUser(event=event_tomorrow_7, invitee=user_2).save()
         EventUser(event=event_yesterday, invitee=user_1).save()
+
+        # -----Bill-----
+        Bill(due=datetime.date.today(),
+             name="Electricity",
+             amount="66.34",
+             maintainer=user_1,
+             description='Electricity bill for the month').save()
+        Bill(due=datetime.date.today() + datetime.timedelta(3),
+             name="Water",
+             amount="25",
+             maintainer=user_2).save()
+        Bill(due=datetime.date.today() - datetime.timedelta(3),
+             name="Past Bill",
+             amount="123",
+             maintainer=user_1).save()
 
         return
