@@ -6,6 +6,7 @@ import flask_login
 import hashlib
 import os
 import base64
+from functools import wraps
 
 from __init__ import app
 import models
@@ -60,9 +61,9 @@ def gen_func(permission):
             return True
     return func
 try:
-    for p_type in models.PermissionType.select():
-        prop_func = property(gen_func(p_type))
-        setattr(User, 'is_' + p_type.name, prop_func)
+    for p_type in models.PERMISSION_TYPE:
+        prop_func = property(gen_func(models.PERMISSION_TYPE[p_type]))
+        setattr(User, 'is_' + p_type, prop_func)
 except:
     pass
 
@@ -97,6 +98,7 @@ def gen_password(password):
 
 
 def admin_required(func):
+    @wraps(func)
     def decorated_view(*args, **kwargs):
         if app.login_manager._login_disabled:
             return func(*args, **kwargs)
