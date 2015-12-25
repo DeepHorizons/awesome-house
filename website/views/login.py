@@ -13,6 +13,7 @@ from __init__ import app
 import models
 import forms.login_forms
 import misc.login_functions as login_functions
+import forms.bill_forms as bill_forms
 
 logger = logging.getLogger(__name__)
 
@@ -83,14 +84,24 @@ def login_settings():
             # Form not valid
             logger.warning('User {} invalid form data'.format(flask_login.current_user.login_name))
             flask.flash('Invalid data submitted', category='danger')
-    elif flask.request.method == 'GET':
-        form.name.data = flask_login.current_user.name
-        form.email.data = flask_login.current_user.email
-        form.phone_number.data = flask_login.current_user.phone_number
-        form.email_me.data = flask_login.current_user.email_me
+
+    form.name.data = flask_login.current_user.name
+    form.email.data = flask_login.current_user.email
+    form.phone_number.data = flask_login.current_user.phone_number
+    form.email_me.data = flask_login.current_user.email_me
+
+    payment_form = None
+    if flask_login.current_user.is_bills:
+        try:
+            payment_method = models.PaymentMethod.get(models.PaymentMethod.user == flask_login.current_user.table_id)
+        except peewee.DoesNotExist:
+            pass
+        else:
+            payment_form = bill_forms.PaymentForm()
+            payment_form.token.data = payment_method.token
 
     flask.flash('Phone number currently does nothing')  # TODO fix this
-    return flask.render_template('settings.html', form=form)
+    return flask.render_template('settings.html', form=form, payment_form=payment_form)
 
 
 @app.route('/login/register', methods=['GET', 'POST'])

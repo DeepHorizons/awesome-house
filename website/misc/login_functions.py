@@ -37,6 +37,7 @@ class User(flask_login.UserMixin):
             self.password = user.password
             self.salt = user.salt
             self.phone_number = user.phone_number
+            self.table_id = user.id
         return
 
     @classmethod

@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+
+{% import "bills/payment_settings.html" as payment_settings %}
+
+{% block body %}
+{{ payment_settings.gen_bill_settings(payment_form) }}
+{% endblock %}

@@ -3,4 +3,4 @@ import wtforms
 
 
 class PaymentForm(flask_wtf.Form):
-    token = wtforms.StringField()
+    token = wtforms.StringField(description="Your venmo userID or leave blank to signify paying cash")
