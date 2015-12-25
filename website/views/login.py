@@ -101,7 +101,7 @@ def login_settings():
             payment_form.token.data = payment_method.token
 
     flask.flash('Phone number currently does nothing')  # TODO fix this
-    return flask.render_template('settings.html', form=form, payment_form=payment_form)
+    return flask.render_template('login/settings.html', form=form, payment_form=payment_form)
 
 
 @app.route('/login/register', methods=['GET', 'POST'])
@@ -144,7 +144,7 @@ def login_register():
                     return flask.redirect(flask.url_for('index'))
         elif flask.request.method == 'GET':
             flask.flash('Phone number currently does nothing')  # TODO fix this
-        return flask.render_template('register.html', form=form)
+        return flask.render_template('login/register.html', form=form)
     else:  # The user is authenticated
         return flask.redirect(flask.url_for('index'))
 
@@ -193,7 +193,7 @@ def login_admin():
 
         users_forms.sort(key=lambda x: x.authorized.data)
 
-        return flask.render_template('admin.html', forms=users_forms)
+        return flask.render_template('login/admin.html', forms=users_forms)
 
     else:  # The user is not an admin
         return flask.redirect(flask.url_for('index'))
