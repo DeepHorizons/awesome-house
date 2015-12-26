@@ -1,4 +1,75 @@
 {% extends "base.html" %}
+{% import 'include_html/macros.html' as macros %}
+
+{% block extra_header %}
+<link rel="stylesheet" type="text/css" href="/static/css/bootstrap-datetimepicker.min.css">
+{% endblock %}
+
 {% block body %}
-bills
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addBill">
+  Add Bill
+</button>
+
+
+<!-- Modal -->
+<div class="modal fade" id="addBill" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">New Event</h4>
+      </div>
+      <div class="modal-body">
+          <form class="form-group" action="/bills" method="POST">
+              {{ new_bill_form.hidden_tag() }}
+
+              {{ macros.gen_group(new_bill_form.name) }}
+              {{ macros.gen_group(new_bill_form.amount) }}
+
+              <div class="form-group {% if new_bill_form.due.errors %}has-error{% endif %}">
+                  {%- for error in new_bill_form.due.errors %}
+                  <label class="control-label">{{ error }}</label>
+                  {%- else %}
+                  {{ new_bill_form.due.label() }}
+                  {%- endfor %}
+
+                  <div class='input-group date' id='datetimepicker1'>
+                      {{ new_bill_form.due(class="form-control") }}
+                      <span class="input-group-addon">
+                          <span class="glyphicon glyphicon-calendar"></span>
+                      </span>
+                  </div>
+              </div>
+
+              {{ macros.gen_group(new_bill_form.description) }}
+              <button type="submit" class="btn btn-default">Submit</button>
+          </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extrajs %}
+<script type="text/javascript">
+    //Open the modal if there is an error
+    var formErrors = {% if new_bill_form.errors %}true{% else %}false{% endif %};
+    $(document).ready(function() {
+        if (formErrors) {
+            $('.modal').modal('show');
+        }
+    });
+</script>
+<script src="/static/js/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript">
+    $("#datetimepicker1").datetimepicker({
+        pickerPosition: "bottom-left",
+        format: "yyyy-mm-dd",  // Don't display the time
+        autoclose: true,
+        startView: 'month',  // This tells it to only pick the date. [https://github.com/smalot/bootstrap-datetimepicker/issues/416]
+        maxView: 'month',
+        minView: 'month',
+    });
+</script>
 {% endblock %}
