@@ -25,7 +25,14 @@
               {{ new_bill_form.hidden_tag() }}
 
               {{ macros.gen_group(new_bill_form.name) }}
-              {{ macros.gen_group(new_bill_form.amount) }}
+              <div class="form-group {% if new_bill_form.amount.errors %}has-error{% endif %}">
+                {%- for error in new_bill_form.amount.errors %}
+                <label class="control-label">{{ error }}</label>
+                {%- else %}
+                {{ new_bill_form.amount.label() }}
+                {%- endfor %}
+                {{ new_bill_form.amount(class='form-control', placeholder='123.45', onchange='change_user_charge(this)') }}
+              </div>
 
               <div class="form-group {% if new_bill_form.due.errors %}has-error{% endif %}">
                   {%- for error in new_bill_form.due.errors %}
@@ -43,6 +50,15 @@
               </div>
 
               {{ macros.gen_group(new_bill_form.description) }}
+
+              <br>
+              <h4>List of users to charge</h4>
+              {% for payment_method in payment_methods %}
+              <label class="col-xs-8">{{ payment_method.user.name }}</label>
+              <div class="col-xs-4">
+                  <input id="user_{{payment_method.user.id}}" type="text" class="form-control charge">
+              </div>
+              {% endfor %}
               <button type="submit" class="btn btn-default">Submit</button>
           </form>
       </div>
@@ -71,5 +87,19 @@
         maxView: 'month',
         minView: 'month',
     });
+</script>
+<script type="text/javascript">
+    function change_user_charge(input) {
+        var amount = parseFloat(input.value);
+        if ($.isNumeric(amount)) {
+            console.log('asd');
+            var charges = $('.charge');
+            var per_person = amount / charges.length;
+            charges.each(function() {
+                this.value = per_person;
+            });
+        }
+    }
+    change_user_charge($('#amount')[0]);
 </script>
 {% endblock %}

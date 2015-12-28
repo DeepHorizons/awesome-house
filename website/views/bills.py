@@ -17,10 +17,19 @@ import misc.common as common
 logger = logging.getLogger(__name__)
 
 
-@app.route('/bills')
+@app.route('/bills', methods=['GET', 'POST'])
 @bill_functions.bills_required
 def bills():
-    return flask.render_template('/bills/bills.html', title='Bills')
+    new_bill_form = forms.bill_forms.BillForm()
+    if flask.request.method == 'POST':
+        if new_bill_form.validate_on_submit():
+            pass
+            flask.flash('Successfully added bill', 'success')
+        # TODO There may need to be a redirect here
+
+    payment_methods = list(models.PaymentMethod.select(models.PaymentMethod, models.User).join(models.User))  # TODO figure out how to handle multiple payment methods
+
+    return flask.render_template('/bills/bills.html', title='Bills', new_bill_form=new_bill_form, payment_methods=payment_methods)
 
 
 @app.route('/bills/settings', methods=['GET', 'POST'])
