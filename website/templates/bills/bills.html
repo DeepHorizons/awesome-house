@@ -31,7 +31,7 @@
                 {%- else %}
                 {{ new_bill_form.amount.label() }}
                 {%- endfor %}
-                {{ new_bill_form.amount(class='form-control', placeholder='123.45', onchange='change_user_charge(this)') }}
+                {{ new_bill_form.amount(class='form-control', placeholder='123.45', onkeyup='change_user_charge(this)') }}
               </div>
 
               <div class="form-group {% if new_bill_form.due.errors %}has-error{% endif %}">
@@ -56,7 +56,7 @@
               {% for payment_method in payment_methods %}
               <label class="col-xs-8">{{ payment_method.user.name }}</label>
               <div class="col-xs-4">
-                  <input id="user_{{payment_method.user.id}}" type="text" class="form-control charge">
+                  <input id="user_{{payment_method.user.id}}" name="user_{{payment_method.user.id}}" type="text" class="form-control charge">
               </div>
               {% endfor %}
               <button type="submit" class="btn btn-default">Submit</button>
