@@ -11,6 +11,20 @@
   Add Bill
 </button>
 
+<h2>Your charges</h2>
+{% for charge in user_charges %}
+{{ charge.bill.name }} - {{ charge.amount }}<br>
+{% else %}
+No charges
+{% endfor %}
+<br>
+<h2>Outstanding Bills</h2>
+{% for bill in outstanding_bills %}
+{{ bill.name }}<br>
+{% else %}
+No bills
+{% endfor %}
+
 
 <!-- Modal -->
 <div class="modal fade" id="addBill" tabindex="-1" role="dialog">
