@@ -90,8 +90,8 @@ class PaymentMethod(BaseModel):
 
 
 class Charges(BaseModel):
-    bill_id = peewee.ForeignKeyField(Bill)
-    payment_id = peewee.ForeignKeyField(PaymentMethod)
+    bill = peewee.ForeignKeyField(Bill)
+    payment_method = peewee.ForeignKeyField(PaymentMethod)
     paid = peewee.BooleanField(default=False)
     amount = peewee.FloatField()
     online_charge_id = peewee.CharField(null=True, default='')

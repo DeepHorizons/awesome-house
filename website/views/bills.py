@@ -42,8 +42,8 @@ def bills():
             for user_id, amount in list_of_charges:
                 payment_method = models.PaymentMethod.get(models.PaymentMethod.user == user_id)
                 charge = models.Charges(
-                    bill_id=new_bill,
-                    payment_id=payment_method,
+                    bill=new_bill,
+                    payment_method=payment_method,
                     amount=amount,
                 )
                 charge.save()
@@ -52,12 +52,14 @@ def bills():
             return flask.redirect(flask.url_for('bills'))
         # TODO There may need to be a redirect here
 
+    # TODO Improve all of this
     payment_methods = list(models.PaymentMethod.select(models.PaymentMethod, models.User).join(models.User))  # TODO figure out how to handle multiple payment methods
     outstanding_user_charges = models.Charges.select(models.Charges, models.PaymentMethod).join(models.PaymentMethod).where((models.PaymentMethod.user == flask_login.current_user.table_id) & (models.Charges.paid == False)).execute()
     outstanding_charges = models.Charges.select().where(models.Charges.paid == False).execute()
-    outstanding_bills = set([charge.bill_id for charge in outstanding_charges])
+    outstanding_bills_ids = [charge.bill.id for charge in outstanding_charges]
+    outstanding_bills = models.Bill.select().where(models.Bill.id.in_(outstanding_bills_ids)).execute()
 
-    return flask.render_template('/bills/bills.html', title='Bills', new_bill_form=new_bill_form, payment_methods=payment_methods)
+    return flask.render_template('/bills/bills.html', title='Bills', new_bill_form=new_bill_form, payment_methods=payment_methods, user_charges=outstanding_user_charges, outstanding_bills=outstanding_bills)
 
 
 @app.route('/bills/settings', methods=['GET', 'POST'])
