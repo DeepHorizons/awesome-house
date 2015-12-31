@@ -363,6 +363,10 @@ if __name__ == '__main__':
         user_2_PM = PaymentMethod(user=user_2, token='abc123')
         user_2_PM.save()
 
+        # This PM Should not be listed as user 3 does not have bill privlages
+        user_3_PM = PaymentMethod(user=user_3)
+        user_3_PM.save()
+
         # -----Charges-----
         charge_1 = Charges(bill=bill_1,
                            payment_method=user_1_PM,
