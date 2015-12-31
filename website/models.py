@@ -357,4 +357,38 @@ if __name__ == '__main__':
              maintainer=user_1)
         bill_3.save()
 
+        # -----PaymentMethod-----
+        user_1_PM = PaymentMethod(user=user_1)
+        user_1_PM.save()
+        user_2_PM = PaymentMethod(user=user_2, token='abc123')
+        user_2_PM.save()
+
+        # -----Charges-----
+        charge_1 = Charges(bill=bill_1,
+                           payment_method=user_1_PM,
+                           paid=False,
+                           amount=33.17)
+        charge_1.save()
+        charge_2 = Charges(bill=bill_1,
+                           payment_method=user_2_PM,
+                           paid=True,
+                           amount=33.17)
+        charge_2.save()
+        charge_3 = Charges(bill=bill_2,
+                           payment_method=user_1_PM,
+                           paid=True,
+                           amount=25)
+        charge_3.save()
+        charge_4 = Charges(bill=bill_3,
+                           payment_method=user_2_PM,
+                           paid=False,
+                           amount=123)
+        charge_4.save()
+
+        # -----PermissionType-----
+        pass
+
+        # -----Permission-----
+        Permission(user=user_2, permission=PERMISSION_TYPE['bills']).save()
+
         return
