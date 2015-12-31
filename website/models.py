@@ -76,6 +76,11 @@ class User(Invitee):
     email_me = peewee.BooleanField(default=True)
 
 
+class EventUser(BaseModel):
+    event = peewee.ForeignKeyField(Event)
+    invitee = peewee.ForeignKeyField(User)
+
+
 class Bill(BaseModel):
     due = peewee.DateField()
     name = peewee.CharField()
@@ -95,11 +100,6 @@ class Charges(BaseModel):
     paid = peewee.BooleanField(default=False)
     amount = peewee.FloatField()
     online_charge_id = peewee.CharField(null=True, default='')
-
-
-class EventUser(BaseModel):
-    event = peewee.ForeignKeyField(Event)
-    invitee = peewee.ForeignKeyField(User)
 
 
 class PermissionType(BaseModel):
@@ -340,18 +340,21 @@ if __name__ == '__main__':
         EventUser(event=event_yesterday, invitee=user_1).save()
 
         # -----Bill-----
-        Bill(due=datetime.date.today(),
+        bill_1 = Bill(due=datetime.date.today(),
              name="Electricity",
              amount="66.34",
              maintainer=user_1,
-             description='Electricity bill for the month').save()
-        Bill(due=datetime.date.today() + datetime.timedelta(3),
+             description='Electricity bill for the month')
+        bill_1.save()
+        bill_2 = Bill(due=datetime.date.today() + datetime.timedelta(3),
              name="Water",
              amount="25",
-             maintainer=user_2).save()
-        Bill(due=datetime.date.today() - datetime.timedelta(3),
+             maintainer=user_2)
+        bill_2.save()
+        bill_3 = Bill(due=datetime.date.today() - datetime.timedelta(3),
              name="Past Bill",
              amount="123",
-             maintainer=user_1).save()
+             maintainer=user_1)
+        bill_3.save()
 
         return
