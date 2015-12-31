@@ -12,15 +12,17 @@
 </button>
 
 <h2>Your charges</h2>
+<br>
 {% for charge in user_charges %}
-{{ charge.bill.name }} - {{ charge.amount }}<br>
+<h4>{{ charge.bill.name }} - <small>${{ charge.amount }}</small></h4>
 {% else %}
 No charges
 {% endfor %}
 <br>
 <h2>Outstanding Bills</h2>
+<br>
 {% for bill in outstanding_bills %}
-{{ bill.name }}<br>
+<h4><a href='/bills/by-id/{{ bill.id }}'>{{ bill.name }}</a></h4>
 {% else %}
 No bills
 {% endfor %}
