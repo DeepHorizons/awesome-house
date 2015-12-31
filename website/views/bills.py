@@ -6,6 +6,7 @@ Index for the website
 import flask
 import logging
 import flask_login
+import peewee
 
 # Local imports
 from __init__ import app
@@ -60,6 +61,17 @@ def bills():
     outstanding_bills = models.Bill.select().where(models.Bill.id.in_(outstanding_bills_ids)).execute()
 
     return flask.render_template('/bills/bills.html', title='Bills', new_bill_form=new_bill_form, payment_methods=payment_methods, user_charges=outstanding_user_charges, outstanding_bills=outstanding_bills)
+
+
+@app.route('/bills/by-id/<int:bill_id>')
+@bill_functions.bills_required
+def bills_by_id(bill_id):
+    try:
+        bill = models.Bill.get(models.Bill.id == bill_id)
+    except peewee.DoesNotExist:
+        logger.warning('User {}; Attempted access to bill ID {} that does not exist'.format(flask_login.current_user.login_name, bill_id))
+        return flask.render_template('bills/bills-by-id.html', error='Bill id {} does not exit'.format(bill_id))
+    return flask.render_template('bills/bills-by-id.html', bill=bill)
 
 
 @app.route('/bills/settings', methods=['GET', 'POST'])
