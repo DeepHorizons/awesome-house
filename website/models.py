@@ -85,18 +85,18 @@ class Bill(BaseModel):
     due = peewee.DateField()
     name = peewee.CharField()
     amount = peewee.FloatField()
-    maintainer = peewee.ForeignKeyField(User)
+    maintainer = peewee.ForeignKeyField(User, related_name='bills_created')
     description = peewee.CharField(default="", max_length=4096)
 
 
 class PaymentMethod(BaseModel):
-    user = peewee.ForeignKeyField(User, related_name='paymentMethods')
+    user = peewee.ForeignKeyField(User, related_name='payment_methods')
     token = peewee.CharField(null=True, default='')
 
 
 class Charges(BaseModel):
-    bill = peewee.ForeignKeyField(Bill)
-    payment_method = peewee.ForeignKeyField(PaymentMethod)
+    bill = peewee.ForeignKeyField(Bill, related_name='charges')
+    payment_method = peewee.ForeignKeyField(PaymentMethod, related_name='charges')
     paid = peewee.BooleanField(default=False)
     amount = peewee.FloatField()
     online_charge_id = peewee.CharField(null=True, default='')
