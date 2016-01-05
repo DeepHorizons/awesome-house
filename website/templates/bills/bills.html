@@ -66,6 +66,11 @@ No bills
               </div>
 
               {{ macros.gen_group(new_bill_form.description) }}
+              <div class="checkbox">
+                  <label>
+                      {{ new_bill_form.private() }} Make Private (Will not show on bill page)
+                  </label>
+              </div>
 
               <br>
               <h4>List of users to charge</h4>

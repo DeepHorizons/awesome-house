@@ -29,7 +29,8 @@ def bills():
                                        name=new_bill_form.name.data,
                                        amount=new_bill_form.amount.data,
                                        maintainer=flask_login.current_user.table_id,
-                                       description=new_bill_form.description.data)
+                                       description=new_bill_form.description.data,
+                                       private=new_bill_form.private.data)
                 new_bill.save()
             except Exception as e:
                 flask.flash('Problem submitting bill', 'danger')
@@ -58,7 +59,7 @@ def bills():
     outstanding_user_charges = models.Charges.select(models.Charges, models.PaymentMethod, models.Bill).join(models.PaymentMethod).switch(models.Charges).join(models.Bill).where((models.PaymentMethod.user == flask_login.current_user.table_id) & (models.Charges.paid == False)).execute()
     outstanding_charges = models.Charges.select().where(models.Charges.paid == False).execute()
     outstanding_bills_ids = [charge.bill.id for charge in outstanding_charges]
-    outstanding_bills = models.Bill.select().where(models.Bill.id.in_(outstanding_bills_ids)).execute()
+    outstanding_bills = models.Bill.select().where(models.Bill.id.in_(outstanding_bills_ids) & (models.Bill.private == False)).order_by(+models.Bill.due).execute()
 
     return flask.render_template('/bills/bills.html', title='Bills', new_bill_form=new_bill_form, payment_methods=payment_methods, user_charges=outstanding_user_charges, outstanding_bills=outstanding_bills)
 

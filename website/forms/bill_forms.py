@@ -13,3 +13,4 @@ class BillForm(flask_wtf.Form):
     amount = wtforms.FloatField(None, [wtforms.validators.DataRequired(), wtforms.validators.NumberRange(0, 5000)])
     description = wtforms.StringField(None, [wtforms.validators.Length(max=4096), wtforms.validators.Optional()],
                                       description='A description of the bill', widget=wtforms.widgets.TextArea())
+    private = wtforms.BooleanField(None, description="Should this be listed on the bill page?")

@@ -87,6 +87,7 @@ class Bill(BaseModel):
     amount = peewee.FloatField()
     maintainer = peewee.ForeignKeyField(User, related_name='bills_created')
     description = peewee.CharField(default="", max_length=4096)
+    private = peewee.BooleanField(default=False)
 
 
 class PaymentMethod(BaseModel):
@@ -357,6 +358,13 @@ if __name__ == '__main__':
              maintainer=user_1)
         bill_3.save()
 
+        private_bill = Bill(due=datetime.date.today() + datetime.timedelta(1),
+                            name='Private Bill',
+                            amount='56',
+                            maintainer=user_1,
+                            private=True)
+        private_bill.save()
+
         # -----PaymentMethod-----
         user_1_PM = PaymentMethod(user=user_1)
         user_1_PM.save()
@@ -388,6 +396,17 @@ if __name__ == '__main__':
                            paid=False,
                            amount=123)
         charge_4.save()
+
+        private_bill_charge_1 = Charges(bill=private_bill,
+                                        payment_method=user_1_PM,
+                                        paid=False,
+                                        amount=12)
+        private_bill_charge_1.save()
+        private_bill_charge_2 = Charges(bill=private_bill,
+                                        payment_method=user_2_PM,
+                                        paid=True,
+                                        amount=12)
+        private_bill_charge_2.save()
 
         # -----PermissionType-----
         pass
