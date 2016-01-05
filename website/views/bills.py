@@ -24,33 +24,40 @@ def bills():
     new_bill_form = forms.bill_forms.BillForm()
     if flask.request.method == 'POST':
         if new_bill_form.validate_on_submit():
-            try:
-                new_bill = models.Bill(due=new_bill_form.due.data,
-                                       name=new_bill_form.name.data,
-                                       amount=new_bill_form.amount.data,
-                                       maintainer=flask_login.current_user.table_id,
-                                       description=new_bill_form.description.data,
-                                       private=new_bill_form.private.data)
-                new_bill.save()
-            except Exception as e:
-                flask.flash('Problem submitting bill', 'danger')
-                logger.critical('Cannot save bill form: {}'.format(e))
-                return flask.redirect(flask.url_for('bills'))
-            else:
-                flask.flash('Successfully added bill', 'success')
+            with getattr(flask.g, 'db', models.db).atomic() as txn:
+                try:
+                    new_bill = models.Bill(due=new_bill_form.due.data,
+                                           name=new_bill_form.name.data,
+                                           amount=new_bill_form.amount.data,
+                                           maintainer=flask_login.current_user.table_id,
+                                           description=new_bill_form.description.data,
+                                           private=new_bill_form.private.data)
+                    new_bill.save()
+                except Exception as e:
+                    flask.flash('Problem submitting bill', 'danger')
+                    logger.critical('Cannot save bill form: {}'.format(e))
+                    txn.rollback()
+                    return flask.redirect(flask.url_for('bills'))
 
-            list_of_charges = [(int(charge[charge.index('_') + 1:]), float(flask.request.form[charge])) for charge in flask.request.form if charge.startswith('user_')]
-            list_of_charges = [(x, y if y >= 0 else 0) for x, y in list_of_charges]  # make sure value amounts are 0 or more
-            for user_id, amount in list_of_charges:
-                payment_method = models.PaymentMethod.get(models.PaymentMethod.user == user_id)
-                charge = models.Charges(
-                    bill=new_bill,
-                    payment_method=payment_method,
-                    amount=amount,
-                )
-                charge.save()
-                # TODO charge online
+                list_of_charges = [(int(charge[charge.index('_') + 1:]), float(flask.request.form[charge])) for charge in flask.request.form if charge.startswith('user_')]
+                list_of_charges = [(x, y if y >= 0 else 0) for x, y in list_of_charges]  # make sure value amounts are 0 or more
+                try:
+                    for user_id, amount in list_of_charges:
+                        payment_method = models.PaymentMethod.get(models.PaymentMethod.user == user_id)
+                        charge = models.Charges(
+                            bill=new_bill,
+                            payment_method=payment_method,
+                            amount=amount,
+                        )
+                        charge.save()
+                        # TODO charge online
+                except Exception as e:
+                    flask.flash('Problem charging users')
+                    logger.critical('Cannot charge user: {}'.format(e))
+                    txn.rollback()
+                    return flask.redirect(flask.url_for('bills'))
 
+            flask.flash('Successfully added bill', 'success')
             return flask.redirect(flask.url_for('bills'))
         # TODO There may need to be a redirect here
 
