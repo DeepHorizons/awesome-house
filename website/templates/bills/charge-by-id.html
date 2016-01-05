@@ -7,8 +7,16 @@
     <div class="row">
             <div class="col-xs-12 col-sm-8 col-md-6">
                 <div class="table-responsive">
-                    <h1><a href="/bills/by-id/{{ charge.bill.id }}">Bill: {{ charge.bill.name }}</a></h1>
-                    <h2><small>{{ charge.amount }}</small></h2>
+                    {% if charge.paid %}<del>{% endif %}
+                    <h1>Bill: <a href="/bills/by-id/{{ charge.bill.id }}">{{ charge.bill.name }}</a></h1>
+                    <h4>Due: {{ charge.bill.due }}</h4>
+                    <h4>Amount: ${{ charge.amount }}</h4>
+                    {% if charge.paid %}</del>{% endif %}
+                    {% if charge.paid %}
+                    This bill has been paid
+                    {% else %}
+                    Not paid yet
+                    {% endif %}
                 </div>
             </div>
         </div>
