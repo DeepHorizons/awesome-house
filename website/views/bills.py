@@ -99,3 +99,15 @@ def bill_payment_settings():
         if payment_form:
             payment_form.token.data = payment_entry[0].token
     return flask.render_template('/bills/settings.html', payment_entry=payment_entry, payment_form=payment_form)
+
+
+@app.route('/charge/by-id/<int:charge_id>')
+@bill_functions.bills_required
+def charge_by_id(charge_id):
+    try:
+        charge = models.Charges.get(models.Charges.id == charge_id)
+        error=None
+    except peewee.DoesNotExist:
+        logger.warning('User {}; Attempted access to charge ID {} that does not exist'.format(flask_login.current_user.login_name, charge_id))
+        error = 'Bill id {} does not exit'.format(charge_id)
+    return flask.render_template('bills/charge-by-id.html', charge=charge, error=error)

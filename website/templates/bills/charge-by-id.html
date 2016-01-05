@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block body %}
+    {% if error %}
+    {{ error }}
+    {% else %}
+    <div class="row">
+            <div class="col-xs-12 col-sm-8 col-md-6">
+                <div class="table-responsive">
+                    <h1><a href="/bills/by-id/{{ charge.bill.id }}">Bill: {{ charge.bill.name }}</a></h1>
+                    <h2><small>{{ charge.amount }}</small></h2>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}
