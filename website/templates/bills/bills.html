@@ -7,7 +7,7 @@
 
 {% block body %}
 <!-- Button trigger modal -->
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addBill">
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addBill" onclick="refill_modal_users();">
   Add Bill
 </button>
 
@@ -74,12 +74,17 @@ No bills
 
               <br>
               <h4>List of users to charge</h4>
-              {% for payment_method in payment_methods %}
-              <label class="col-xs-8">{{ payment_method.user.name }}</label>
-              <div class="col-xs-4">
-                  <input id="user_{{payment_method.user.id}}" name="user_{{payment_method.user.id}}" type="text" class="form-control charge">
+              <div id="users_to_charge">
+                  {% for payment_method in payment_methods %}
+                  <div id="user_{{payment_method.user.id}}">
+                      <label class="col-xs-7">{{ payment_method.user.name }}</label>
+                      <div class="col-xs-4">
+                          <input name="user_{{payment_method.user.id}}" type="text" class="form-control charge">
+                      </div>
+                      <button class="btn col-xs-1" type="button" onclick="$('#user_{{payment_method.user.id}}').remove();"><span class="glyphicon glyphicon-remove"></span></button>
+                  </div>
+                  {% endfor %}
               </div>
-              {% endfor %}
               <button type="submit" class="btn btn-default">Submit</button>
           </form>
       </div>
@@ -97,6 +102,21 @@ No bills
             $('.modal').modal('show');
         }
     });
+
+    //Refill the modal on the button click
+    function refill_modal_users() {
+      var text = `{% for payment_method in payment_methods -%}
+                  <div id="user_{{payment_method.user.id}}">
+                      <label class="col-xs-7">{{ payment_method.user.name }}</label>
+                      <div class="col-xs-4">
+                          <input name="user_{{payment_method.user.id}}" type="text" class="form-control charge">
+                      </div>
+                      <button class="btn col-xs-1" type="button" onclick="$('#user_{{payment_method.user.id}}').remove();"><span class="glyphicon glyphicon-remove"></span></button>
+                  </div>
+                  {%- endfor %}`;
+      var div_to_fill = document.getElementById('users_to_charge');
+      div_to_fill.innerHTML = text;
+    }
 </script>
 <script src="/static/js/bootstrap-datetimepicker.min.js"></script>
 <script type="text/javascript">
