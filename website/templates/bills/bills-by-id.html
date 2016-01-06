@@ -15,7 +15,7 @@
                 <h5>Charges:</h5>
                 {% for charge in bill.charges %}
                 <div style="margin-left: 15px">
-                    {% if charge.paid %}<del>{% endif %}<a href="/charge/by-id/{{ charge.id }}">{{ charge.amount }}</a>{% if charge.paid %}</del>{% endif %}
+                    {% if charge.paid %}<del>{% endif %}{% if charge.bill.maintainer.id == current_user.table_id %}{{ charge.payment_method.user.name }} - {% endif %}<a href="/charge/by-id/{{ charge.id }}">{{ charge.amount }}</a>{% if charge.paid %}</del>{% endif %}
                 </div>
                 {% else %}
                     No Charges
