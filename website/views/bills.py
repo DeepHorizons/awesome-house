@@ -126,11 +126,12 @@ def charge_by_id(charge_id):
 def bills_venmo_redirect():
     if 'error' in flask.request.args:
         flask.flash('The request was denied. Please retry authenticating with Venmo', 'danger')
-    elif flask.request.args.get('state', None) != flask.g['state']:
-        logger.critical('CSRF Check failed in bills_venmo_redirect. Expected {} but got {}'.format(flask.g.pop('state'), flask.request.args.get('state', None)))
+    elif (flask.g.get('state', None) is None) or (flask.request.args.get('state', None) != flask.g.get('state', None)):
+        logger.critical('CSRF Check failed in bills_venmo_redirect. Expected {} but got {}'.format(flask.g.get('state'), flask.request.args.get('state', None)))
+        flask.g.state = None
         flask.flash('CSRF Failed. Please retry', 'danger')
     else:
-        flask.g.pop('state')
+        flask.g.state = None
         user_code = flask.request.args['code']
         logger.info('User {} with id {} got the Venmo code of {}'.format(flask_login.current_user.name, flask_login.current_user.table_id, user_code))
 
