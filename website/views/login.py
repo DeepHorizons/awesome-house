@@ -98,7 +98,7 @@ def login_settings():
             pass
         else:
             payment_form = bill_forms.PaymentForm()
-            payment_form.token.data = payment_method.token
+            payment_form.pay_online.data = payment_method.pay_online
 
     flask.flash('Phone number currently does nothing')  # TODO fix this
     return flask.render_template('login/settings.html', form=form, payment_form=payment_form)

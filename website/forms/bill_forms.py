@@ -3,7 +3,7 @@ import wtforms
 
 
 class PaymentForm(flask_wtf.Form):
-    token = wtforms.StringField(description="Your venmo userID or leave blank to signify paying cash")
+    pay_online = wtforms.BooleanField(description="Are you paying online?")
 
 
 class BillForm(flask_wtf.Form):

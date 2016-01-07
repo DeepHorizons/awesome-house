@@ -98,7 +98,7 @@ def bill_payment_settings():
                 return common.redirect_back('/bills/settings')
         else:
             # TODO find a way to handle multiple paymentMethods
-            payment_entry[0].token = payment_form.token.data
+            payment_entry[0].pay_online = payment_form.pay_online.data
             payment_entry[0].save()
         _next = flask.request.form['next']
         if _next:

@@ -8,7 +8,7 @@
             <form class="form-group" action="/bills/settings" method="POST">
                 {{ payment_form.hidden_tag() }}
                 <input type=hidden value="{{ next }}" name=next> <!-- This specifies to redirect to this page after the request -->
-                {{ macros.gen_group(payment_form.token, 'Leave empty for cash') }}
+                {{ macros.gen_group(payment_form.pay_online) }}
                 <button type="submit" class="btn btn-default">Submit</button>
             </form>
         {% else %}
