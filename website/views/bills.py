@@ -7,6 +7,7 @@ import flask
 import logging
 import flask_login
 import peewee
+import requests
 
 # Local imports
 from __init__ import app
@@ -105,7 +106,7 @@ def bill_payment_settings():
             return common.redirect_back('/bills/settings')
     else:
         if payment_form:
-            payment_form.token.data = payment_entry[0].token
+            payment_form.pay_online.data = payment_entry[0].pay_online
     return flask.render_template('/bills/settings.html', payment_entry=payment_entry, payment_form=payment_form)
 
 
@@ -119,3 +120,27 @@ def charge_by_id(charge_id):
         logger.warning('User {}; Attempted access to charge ID {} that does not exist'.format(flask_login.current_user.login_name, charge_id))
         error = 'Bill id {} does not exit'.format(charge_id)
     return flask.render_template('bills/charge-by-id.html', charge=charge, error=error)
+
+
+@app.route('/bills/venmo_redirect')
+def bills_venmo_redirect():
+    if 'error' in flask.request.args:
+        flask.flash('The request was denied. Please retry authenticating with Venmo', 'danger')
+    else:
+        user_code = flask.request.args['code']
+        logger.info('User {} with id {} got the Venmo code of {}'.format(flask_login.current_user.name, flask_login.current_user.table_id, user_code))
+
+        # Get the access token from the code
+        data = {
+            'client_id': app.config.get('VENMO_CLIENT_ID', None),
+            'client_secret': app.config.get('VENMO_CLIENT_SECRET', None),
+            'code': user_code
+        }
+        url = "https://api.venmo.com/v1/oauth/access_token"
+        response = requests.post(url, data)
+        response_dict = response.json()
+        logger.info('Venmo gave the response of \n{}'.format(response_dict))
+
+        access_token = response_dict['access_token']
+        user_venmo_id = response_dict['user']['id']
+    return flask.redirect(flask.url_for('bill_payment_settings'))
