@@ -129,7 +129,7 @@ def bills_venmo_redirect():
     elif (flask.g.get('state', None) is None) or (flask.request.args.get('state', None) != flask.g.get('state', None)):
         logger.critical('CSRF Check failed in bills_venmo_redirect. Expected {} but got {}'.format(flask.g.get('state'), flask.request.args.get('state', None)))
         flask.g.state = None
-        flask.flash('CSRF Failed. Please retry', 'danger')
+        flask.flash('Venmo CSRF Failed. Please retry', 'danger')
     else:
         flask.g.state = None
         user_code = flask.request.args['code']
@@ -148,4 +148,11 @@ def bills_venmo_redirect():
 
         access_token = response_dict['access_token']
         user_venmo_id = response_dict['user']['id']
+
+        payment_method = models.PaymentMethod.get(models.PaymentMethod.user == flask_login.current_user.table_id)
+        payment_method.token = access_token
+        payment_method.online_user_id = user_venmo_id
+        payment_method.pay_online = True
+        payment_method.save()
+        flask.flash('Venmo payments were successfully set up', 'success')
     return flask.redirect(flask.url_for('index'))
