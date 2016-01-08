@@ -125,8 +125,9 @@ def bill_payment_settings():
 def charge_by_id(charge_id):
     try:
         charge = models.Charges.get(models.Charges.id == charge_id)
-        error=None
+        error = None
     except peewee.DoesNotExist:
+        charge = None
         logger.warning('User {}; Attempted access to charge ID {} that does not exist'.format(flask_login.current_user.login_name, charge_id))
         error = 'Bill id {} does not exit'.format(charge_id)
     return flask.render_template('bills/charge-by-id.html', charge=charge, error=error)
