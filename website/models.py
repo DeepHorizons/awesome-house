@@ -291,7 +291,7 @@ if __name__ == '__main__':
         import os
         import hashlib
         import base64
-        salt = base64.b64encode(os.urandom(32))
+        salt = base64.b64encode(os.urandom(User.salt.max_length))
         password = hashlib.sha256('password1'.encode() + salt).hexdigest()
         user_1 = User(name='User 1',
                       login_name='user1',
@@ -302,7 +302,7 @@ if __name__ == '__main__':
         user_1.save()
         add_admin(user_1)
 
-        salt = base64.b64encode(os.urandom(32))
+        salt = base64.b64encode(os.urandom(User.salt.max_length))
         password = hashlib.sha256('password2'.encode() + salt).hexdigest()
         user_2 = User(name='User 2',
                       login_name='user2',
@@ -314,7 +314,7 @@ if __name__ == '__main__':
         user_2.save()
         Permission(user=user_2, permission=PERMISSION_TYPE['authorized']).save()
 
-        salt = base64.b64encode(os.urandom(32))
+        salt = base64.b64encode(os.urandom(User.salt.max_length))
         password = hashlib.sha256('password3'.encode() + salt).hexdigest()
         user_3 = User(name='User 3',
                       login_name='user3',
@@ -326,7 +326,7 @@ if __name__ == '__main__':
         user_3.save()
         Permission(user=user_3, permission=PERMISSION_TYPE['authorized']).save()
 
-        salt = base64.b64encode(os.urandom(32))
+        salt = base64.b64encode(os.urandom(User.salt.max_length))
         password = hashlib.sha256('password4'.encode() + salt).hexdigest()
         user_4 = User(name='User 4',
                       login_name='user4',
