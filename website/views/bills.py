@@ -8,6 +8,8 @@ import logging
 import flask_login
 import peewee
 import requests
+import os
+import base64
 
 # Local imports
 from __init__ import app
@@ -99,8 +101,16 @@ def bill_payment_settings():
                 return common.redirect_back('/bills/settings')
         else:
             # TODO find a way to handle multiple paymentMethods
-            payment_entry[0].pay_online = payment_form.pay_online.data
-            payment_entry[0].save()
+            if payment_form.pay_online.data:
+                if (app.config.get('VENMO_CLIENT_ID', None) is None) or (app.config.get('VENMO_CLIENT_SECRET', None) is None):
+                    flask.flash('The site is not configured to user Venmo. Contact the site administrator', 'warning')
+                    logger.critical('No VENMO_CLIENT_ID or VENMO_CLIENT_SECRET set in the config')
+                else:
+                    state = base64.b64encode(os.urandom(10)).decode()
+                    flask.g.state = state
+                    logger.debug('Redirecting user {} id {} to venmo to authenticate, state is {}'.format(flask_login.current_user.name, flask_login.current_user.table_id, state))
+                    return flask.redirect('https://api.venmo.com/v1/oauth/authorize?client_id={}&scope={}&response_type=code&state={}'.format(app.config.get('VENMO_CLIENT_ID', None), 'make_payments%20access_payment_history', state))
+
         _next = flask.request.form['next']
         if _next:
             return common.redirect_back('/bills/settings')
