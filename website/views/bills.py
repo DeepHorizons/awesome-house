@@ -8,8 +8,7 @@ import logging
 import flask_login
 import peewee
 import requests
-import os
-import base64
+import random
 
 # Local imports
 from __init__ import app
@@ -106,8 +105,9 @@ def bill_payment_settings():
                     flask.flash('The site is not configured to user Venmo. Contact the site administrator', 'warning')
                     logger.critical('No VENMO_CLIENT_ID or VENMO_CLIENT_SECRET set in the config')
                 else:
-                    state = base64.b64encode(os.urandom(10)).decode()
-                    flask.g.state = state
+                    state = random.randint(0, 100000)
+                    payment_entry[0].token = state
+                    payment_entry[0].save()
                     logger.debug('Redirecting user {} id {} to venmo to authenticate, state is {}'.format(flask_login.current_user.name, flask_login.current_user.table_id, state))
                     return flask.redirect('https://api.venmo.com/v1/oauth/authorize?client_id={}&scope={}&response_type=code&state={}'.format(app.config.get('VENMO_CLIENT_ID', None), 'make_payments%20access_payment_history', state))
 
@@ -137,12 +137,13 @@ def charge_by_id(charge_id):
 def bills_venmo_redirect():
     if 'error' in flask.request.args:
         flask.flash('The request was denied. Please retry authenticating with Venmo', 'danger')
-    elif (flask.g.get('state', None) is None) or (flask.request.args.get('state', None) != flask.g.get('state', None)):
-        logger.critical('CSRF Check failed in bills_venmo_redirect. Expected {} but got {}'.format(flask.g.get('state'), flask.request.args.get('state', None)))
+
+    payment_method = models.PaymentMethod.get(models.PaymentMethod.user == flask_login.current_user.table_id)
+    if (payment_method.token is None) or (flask.request.args.get('state', None) != str(payment_method.token)):
+        logger.critical('CSRF Check failed in bills_venmo_redirect. Expected {} but got {}'.format(payment_method.token, flask.request.args.get('state', None)))
         flask.g.state = None
         flask.flash('Venmo CSRF Failed. Please retry', 'danger')
     else:
-        flask.g.state = None
         user_code = flask.request.args['code']
         logger.info('User {} with id {} got the Venmo code of {}'.format(flask_login.current_user.name, flask_login.current_user.table_id, user_code))
 
