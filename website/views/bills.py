@@ -109,7 +109,7 @@ def bill_payment_settings():
                     payment_entry[0].token = state
                     payment_entry[0].save()
                     logger.debug('Redirecting user {} id {} to venmo to authenticate, state is {}'.format(flask_login.current_user.name, flask_login.current_user.table_id, state))
-                    return flask.redirect('https://api.venmo.com/v1/oauth/authorize?client_id={}&scope={}&response_type=code&state={}'.format(app.config.get('VENMO_CLIENT_ID', None), 'make_payments%20access_payment_history', state))
+                    return flask.redirect('https://api.venmo.com/v1/oauth/authorize?client_id={}&scope={}&response_type=code&state={}'.format(app.config.get('VENMO_CLIENT_ID', None), 'make_payments%20access_profile', state))
 
         _next = flask.request.form['next']
         if _next:
