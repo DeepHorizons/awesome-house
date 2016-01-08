@@ -2,6 +2,7 @@ import flask
 import logging
 import flask_login
 from functools import wraps
+import requests
 
 from __init__ import app
 
@@ -17,3 +18,16 @@ def bills_required(func):
             return app.login_manager.unauthorized()
         return func(*args, **kwargs)
     return decorated_view
+
+
+def charge_venmo(access_token, charged_user_id, note, amount, audience='friends'):
+    url = 'https://api.venmo.com/v1/payments'
+    payload = {'access_token': access_token,
+               'user_id': charged_user_id,
+               'note': note,
+               'amount': amount,
+               'audience': audience}
+
+    response = requests.post(url, payload)
+    return response.json()
+

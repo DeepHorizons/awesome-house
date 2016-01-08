@@ -43,16 +43,23 @@ def bills():
 
                 list_of_charges = [(int(charge[charge.index('_') + 1:]), float(flask.request.form[charge])) for charge in flask.request.form if charge.startswith('user_')]
                 list_of_charges = [(x, y if y >= 0 else 0) for x, y in list_of_charges]  # make sure value amounts are 0 or more
+                maintainer_payment_method = models.PaymentMethod.get(models.PaymentMethod.user == flask_login.current_user.table_id)
                 try:
                     for user_id, amount in list_of_charges:
+                        # TODO handle multiple payment methods
                         payment_method = models.PaymentMethod.get(models.PaymentMethod.user == user_id)
                         charge = models.Charges(
                             bill=new_bill,
                             payment_method=payment_method,
                             amount=amount,
                         )
-                        charge.save()
+
                         # TODO charge online
+                        if payment_method.pay_online:
+                            response_json = bill_functions.charge_venmo(maintainer_payment_method.token, payment_method.online_user_id, new_bill.name, amount, 'private' if new_bill.private else 'friends')
+                            charge.online_charge_id = response_json['data']['payment']['id']
+                        charge.save()
+
                 except Exception as e:
                     flask.flash('Problem charging users')
                     logger.critical('Cannot charge user: {}'.format(e))
