@@ -31,3 +31,8 @@ def charge_venmo(access_token, charged_user_id, note, amount, audience='friends'
     response = requests.post(url, payload)
     return response.json()
 
+
+def venmo_get_payment_info(access_token, payment_id):
+    url = 'https://api.venmo.com/v1/payments/{}?access_token={}'.format(payment_id, access_token)
+    response = requests.get(url)
+    return response.json()

@@ -72,8 +72,17 @@ def bills():
 
     # TODO Improve all of this
     payment_methods = list(models.PaymentMethod.select(models.PaymentMethod, models.User).join(models.User).join(models.Permission).where(models.Permission.permission == models.PERMISSION_TYPE['bills']))  # TODO figure out how to handle multiple payment methods
-    outstanding_user_charges = models.Charges.select(models.Charges, models.PaymentMethod, models.Bill).join(models.PaymentMethod).switch(models.Charges).join(models.Bill).where((models.PaymentMethod.user == flask_login.current_user.table_id) & (models.Charges.paid == False)).execute()
     outstanding_charges = models.Charges.select().where(models.Charges.paid == False).execute()
+
+    for charge in outstanding_charges:
+        if charge.online_charge_id:
+            response_json = bill_functions.venmo_get_payment_info(charge.token, charge.online_charge_id)
+            if response_json['data']['payment']['status'] == 'settled':
+                charge.paid = True
+                charge.save()
+
+    outstanding_charges = models.Charges.select().where(models.Charges.paid == False).execute()  # Get it again if it was updated
+    outstanding_user_charges = models.Charges.select(models.Charges, models.PaymentMethod, models.Bill).join(models.PaymentMethod).switch(models.Charges).join(models.Bill).where((models.PaymentMethod.user == flask_login.current_user.table_id) & (models.Charges.paid == False)).execute()
     outstanding_bills_ids = [charge.bill.id for charge in outstanding_charges]
     outstanding_bills = models.Bill.select().where(models.Bill.id.in_(outstanding_bills_ids) & (models.Bill.private == False)).order_by(+models.Bill.due).execute()
 
