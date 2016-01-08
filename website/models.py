@@ -92,9 +92,9 @@ class Bill(BaseModel):
 
 class PaymentMethod(BaseModel):
     user = peewee.ForeignKeyField(User, related_name='payment_methods')
-    pay_online = peewee.BooleanField()
+    pay_online = peewee.BooleanField(default=False)
     token = peewee.CharField(null=True, default='')
-    online_user_id = peewee.CharField(default=False)
+    online_user_id = peewee.CharField(null=True, default='')
 
 
 class Charges(BaseModel):
