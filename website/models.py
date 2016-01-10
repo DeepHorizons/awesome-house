@@ -333,9 +333,18 @@ if __name__ == '__main__':
                       salt=salt.decode(),
                       password=password,
                       email_me=True,
-                      email="test4@test.moe",
-                      authorized=False)
+                      email="test4@test.moe")
         user_4.save()
+
+        salt = base64.b64encode(os.urandom(User.salt.max_length))
+        password = hashlib.sha256('venmo_sandbox_user'.encode() + salt).hexdigest()
+        venmo_user = User(name='Venmo sandbox user',
+                      login_name='venmo_sandbox_user',
+                      salt=salt.decode(),
+                      password=password,
+                      email_me=True,
+                      email="venmo@venmo.com")
+        venmo_user.save()
 
         # -----EventUser-----
         EventUser(event=event_today, invitee=user_3).save()
@@ -377,6 +386,11 @@ if __name__ == '__main__':
         user_3_PM = PaymentMethod(user=user_3)
         user_3_PM.save()
 
+        venmo_user_PM = PaymentMethod(user=venmo_user,
+                                      pay_online=True,
+                                      online_user_id='145434160922624933')
+        venmo_user_PM.save()
+
         # -----Charges-----
         charge_1 = Charges(bill=bill_1,
                            payment_method=user_1_PM,
@@ -415,5 +429,6 @@ if __name__ == '__main__':
 
         # -----Permission-----
         Permission(user=user_2, permission=PERMISSION_TYPE['bills']).save()
+        Permission(user=venmo_user, permission=PERMISSION_TYPE['bills']).save()
 
         return

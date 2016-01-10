@@ -8,6 +8,10 @@ from __init__ import app
 
 logger = logging.getLogger(__name__)
 
+VENMO_URL = 'https://api.venmo.com/v1'
+if app.config.get('TESTING', None):
+    VENMO_URL = 'https://sandbox-api.venmo.com/v1'
+
 
 def bills_required(func):
     @wraps(func)
@@ -23,7 +27,7 @@ def bills_required(func):
 
 
 def charge_venmo(access_token, charged_user_id, note, amount, audience='friends'):
-    url = 'https://api.venmo.com/v1/payments'
+    url = VENMO_URL + '/payments'
     payload = {'access_token': access_token,
                'user_id': charged_user_id,
                'note': note,
@@ -35,7 +39,7 @@ def charge_venmo(access_token, charged_user_id, note, amount, audience='friends'
 
 
 def venmo_get_payment_info(access_token, payment_id):
-    url = 'https://api.venmo.com/v1/payments/{}?access_token={}'.format(payment_id, access_token)
+    url = VENMO_URL + '/payments/{}?access_token={}'.format(payment_id, access_token)
     response = requests.get(url).json()
     return look_for_error(response)
 
