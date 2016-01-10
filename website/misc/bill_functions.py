@@ -27,7 +27,7 @@ def charge_venmo(access_token, charged_user_id, note, amount, audience='friends'
     payload = {'access_token': access_token,
                'user_id': charged_user_id,
                'note': note,
-               'amount': amount,
+               'amount': -(float(amount)),
                'audience': audience}
 
     response = requests.post(url, payload).json()
