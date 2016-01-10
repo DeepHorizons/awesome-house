@@ -74,9 +74,15 @@ def bills():
     payment_methods = list(models.PaymentMethod.select(models.PaymentMethod, models.User).join(models.User).join(models.Permission).where(models.Permission.permission == models.PERMISSION_TYPE['bills']))  # TODO figure out how to handle multiple payment methods
     outstanding_charges = models.Charges.select().where(models.Charges.paid == False).execute()
 
+    # Get an update on all charges that were made online
     for charge in outstanding_charges:
         if charge.online_charge_id:
-            response_json = bill_functions.venmo_get_payment_info(charge.token, charge.online_charge_id)
+            try:
+                response_json = bill_functions.venmo_get_payment_info(charge.token, charge.online_charge_id)
+            except LookupError as e:
+                logger.critical('Could not get charge information: {}'.format(e))
+                flask.flash('Could not get charge information')
+                break
             if response_json['data']['payment']['status'] == 'settled':
                 charge.paid = True
                 charge.save()

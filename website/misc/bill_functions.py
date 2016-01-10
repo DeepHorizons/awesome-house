@@ -6,6 +6,8 @@ import requests
 
 from __init__ import app
 
+logger = logging.getLogger(__name__)
+
 
 def bills_required(func):
     @wraps(func)
@@ -28,11 +30,18 @@ def charge_venmo(access_token, charged_user_id, note, amount, audience='friends'
                'amount': amount,
                'audience': audience}
 
-    response = requests.post(url, payload)
-    return response.json()
+    response = requests.post(url, payload).json()
+    return look_for_error(response)
 
 
 def venmo_get_payment_info(access_token, payment_id):
     url = 'https://api.venmo.com/v1/payments/{}?access_token={}'.format(payment_id, access_token)
-    response = requests.get(url)
-    return response.json()
+    response = requests.get(url).json()
+    return look_for_error(response)
+
+
+def look_for_error(response):
+    if 'error' in response:
+        logger.critical('Venmo access error code {}: {}'.format(response['error']['code'], response['error']['message']))
+        raise LookupError('Improper access to venmo')
+    return response
