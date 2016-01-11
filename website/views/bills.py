@@ -146,7 +146,7 @@ def bill_payment_settings():
     return flask.render_template('/bills/settings.html', payment_entry=payment_entry, payment_form=payment_form)
 
 
-@app.route('/charge/by-id/<int:charge_id>')
+@app.route('/charge/by-id/<int:charge_id>', methods=['GET', 'POST'])
 @bill_functions.bills_required
 def charge_by_id(charge_id):
     try:
@@ -156,6 +156,10 @@ def charge_by_id(charge_id):
         charge = None
         logger.warning('User {}; Attempted access to charge ID {} that does not exist'.format(flask_login.current_user.login_name, charge_id))
         error = 'Bill id {} does not exit'.format(charge_id)
+    else:
+        if flask.request.method == 'POST':
+            charge.paid = not charge.paid
+            charge.save()
     return flask.render_template('bills/charge-by-id.html', charge=charge, error=error)
 
 

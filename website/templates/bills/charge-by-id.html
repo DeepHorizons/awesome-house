@@ -18,6 +18,12 @@
                     {% else %}
                     Not paid yet
                     {% endif %}
+                    {% if charge.bill.maintainer.id == current_user.table_id %}
+                    <form class="form-group" action="/charge/by-id/{{ charge.id }}" method="POST">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                        <button type="submit" class="btn btn-default">{% if charge.paid %}Uncharge this user{% else %}This user has paid{% endif %}</button>
+                    </form>
+                    {% endif %}
                 </div>
             </div>
         </div>
