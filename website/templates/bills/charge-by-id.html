@@ -9,6 +9,7 @@
                 <div class="table-responsive">
                     {% if charge.paid %}<del>{% endif %}
                     <h1>Bill: <a href="/bills/by-id/{{ charge.bill.id }}">{{ charge.bill.name }}</a></h1>
+                    {% if charge.bill.maintainer.id == current_user.table_id %}<h4>User: {{ charge.payment_method.user.name }}</h4>{% endif %}
                     <h4>Due: {{ charge.bill.due }}</h4>
                     <h4>Amount: ${{ charge.amount }}</h4>
                     {% if charge.paid %}</del>{% endif %}
