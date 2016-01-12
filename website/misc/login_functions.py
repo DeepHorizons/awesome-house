@@ -3,9 +3,7 @@ import logging
 import flask_login
 import peewee
 import flask_login
-import hashlib
-import os
-import base64
+import bcrypt
 
 from __init__ import app
 import models
@@ -34,7 +32,6 @@ class User(flask_login.UserMixin):
             self.email_me = user.email_me
             self.email = user.email
             self.password = user.password
-            self.salt = user.salt
             self.phone_number = user.phone_number
         return
 
@@ -72,28 +69,15 @@ def load_user(login_name):
     return User.get(login_name)
 
 
-func_dict = {56: hashlib.sha224,
-             64: hashlib.sha256,
-             96: hashlib.sha384,
-             128: hashlib.sha512}
-try:
-    hash_func = func_dict[models.User.password.max_length]
-    logger.critical('Selected hash function {}'.format(hash_func))
-except KeyError:
-    logger.critical('Unable to select proper hash algorithm, falling back to hash256')
-    hash_func = hashlib.sha256
-
-
-def get_password_hash(password, salt):
-    """Generate the password hash given the plaintext of the password anda salt"""
-    return hash_func(password.encode() + salt.encode()).hexdigest()
+def get_password_hash(password, hashed):
+    """Generate the password hash given the plaintext of the password and a salt
+    The salt can be a bcrypt pasword hash"""
+    return bcrypt.hashpw(password.encode(), hashed.encode()).decode()
 
 
 def gen_password(password):
     """Generate a password hash given the plaintext of the password"""
-    salt = base64.b64encode(os.urandom(models.User.salt.max_length)).decode()
-    password = get_password_hash(password, salt)
-    return password, salt
+    return get_password_hash(password, bcrypt.gensalt(12).decode())
 
 
 def admin_required(func):

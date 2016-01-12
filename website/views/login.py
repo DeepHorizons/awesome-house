@@ -27,7 +27,7 @@ def login_check():
         user = login_functions.User.get(login_name)
         if user:
             if user.is_authorized:
-                password = login_functions.get_password_hash(form.password.data, user.salt)
+                password = login_functions.get_password_hash(form.password.data, user.password)
                 if password == user.password:
                     flask_login.login_user(user)
                     logger.debug('User {}; Successfully logged in '.format(login_name))
@@ -109,13 +109,12 @@ def login_register():
                 logger.debug('Registering new user: Login name: {} |Password: {}|Name: {} |email: {} |Phone: {} |email me?: {}'.format(login_name, password, name, email, phone_number, email_me))  # TODO records password in log, remove this
 
                 # Password
-                password, salt = login_functions.gen_password(password)
+                password = login_functions.gen_password(password)
                 logger.debug('pass hash is {}'.format(password))
 
                 try:
                     models.User(name=name,
                                 login_name=login_name,
-                                salt=salt,
                                 password=password,
                                 email_me=email_me,
                                 email=email).save()
