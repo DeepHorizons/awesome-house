@@ -78,7 +78,6 @@ class Bill(BaseModel):
 class User(Invitee):
     login_name = peewee.CharField(unique=True, max_length=64)
     password = peewee.FixedCharField(max_length=64)
-    salt = peewee.FixedCharField(max_length=32)  # This should be half the password max length
     email_me = peewee.BooleanField(default=True)
 
 
@@ -271,14 +270,10 @@ if __name__ == '__main__':
              amount="123").save()
 
         # -----User-----
-        import os
-        import hashlib
-        import base64
-        salt = base64.b64encode(os.urandom(32))
-        password = hashlib.sha256('password1'.encode() + salt).hexdigest()
+        import bcrypt
+        password = bcrypt.hashpw('password1'.encode(), bcrypt.gensalt(12)).decode()
         user_1 = User(name='User 1',
                       login_name='user1',
-                      salt=salt.decode(),
                       password=password,
                       email_me=False,
                       email="test@test.info")
@@ -286,11 +281,9 @@ if __name__ == '__main__':
         Permission(user=user_1, permission=PERMISSION_TYPE['admin']).save()
         Permission(user=user_1, permission=PERMISSION_TYPE['authorized']).save()
 
-        salt = base64.b64encode(os.urandom(32))
-        password = hashlib.sha256('password2'.encode() + salt).hexdigest()
+        password = bcrypt.hashpw('password2'.encode(), bcrypt.gensalt(12)).decode()
         user_2 = User(name='User 2',
                       login_name='user2',
-                      salt=salt.decode(),
                       password=password,
                       email_me=False,
                       email="test2@test.info",
@@ -298,11 +291,9 @@ if __name__ == '__main__':
         user_2.save()
         Permission(user=user_2, permission=PERMISSION_TYPE['authorized']).save()
 
-        salt = base64.b64encode(os.urandom(32))
-        password = hashlib.sha256('password3'.encode() + salt).hexdigest()
+        password = bcrypt.hashpw('password3'.encode(), bcrypt.gensalt(12)).decode()
         user_3 = User(name='User 3',
                       login_name='user3',
-                      salt=salt.decode(),
                       password=password,
                       email_me=True,
                       email="test3@test.moe",
@@ -310,11 +301,9 @@ if __name__ == '__main__':
         user_3.save()
         Permission(user=user_3, permission=PERMISSION_TYPE['authorized']).save()
 
-        salt = base64.b64encode(os.urandom(32))
-        password = hashlib.sha256('password4'.encode() + salt).hexdigest()
+        password = bcrypt.hashpw('password4'.encode(), bcrypt.gensalt(12)).decode()
         user_4 = User(name='User 4',
                       login_name='user4',
-                      salt=salt.decode(),
                       password=password,
                       email_me=True,
                       email="test4@test.moe",
