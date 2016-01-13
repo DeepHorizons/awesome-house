@@ -14,15 +14,7 @@ Current Song: <div id="current_song"></div>
 <script src="/static/js/websock/websock.js"></script>
 <script src="/static/js/mpd.js"></script>
 <script type="text/javascript">
-    var audio = new Audio('http://127.0.0.1:8000/sdf.ogg');
+    var audio = new Audio('/music/get_music');
     audio.play();
-
-    var mpd_client = MPD(6600, 'localhost');
-    mpd_client.on('StateChanged', function(){
-    var current_song = mpd_client.getCurrentSong();
-      console.log(current_song);
-    });
-
-
 </script>
 {% endblock %}
