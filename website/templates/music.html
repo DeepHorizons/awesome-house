@@ -4,17 +4,37 @@
 {% endblock %}
 
 {% block body %}
-music
-Current Song: <div id="current_song"></div>
+Current Song: <div id="song_name"></div>
+Current Arist: <div id="artist_name"></div>
+<button id='next_btn' class="btn btn-default" onclick="next_func();">Next</button>
 {% endblock %}
 
 {% block extrajs %}
-<script src="/static/js/websock/base64.js"></script>
-<script src="/static/js/websock/util.js"></script>
-<script src="/static/js/websock/websock.js"></script>
-<script src="/static/js/mpd.js"></script>
 <script type="text/javascript">
     var audio = new Audio('/music/get_music');
     audio.play();
+
+    var csrftoken = $('meta[name=csrf-token]').attr('content')
+    next_func = function() {
+      $.ajax({
+        url: '/music/control/next',
+        type: 'PUT',
+        headers: {"X-CSRFToken": csrftoken}
+      });
+    }
+
+    update_status = function() {
+      $.ajax({
+        url: '/music/info/current_song',
+        type: 'GET',
+        headers: {"X-CSRFToken": csrftoken},
+      }).done(function(resp) {
+        $('#song_name').html(resp.song);
+        $('#artist_name').html(resp.artist);
+
+        setTimeout(update_status, 5000);
+      });
+    }
+    update_status();
 </script>
 {% endblock %}

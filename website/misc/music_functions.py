@@ -13,20 +13,22 @@ MPD_SINGLETON = mpd.MPDClient()
 class MPDClientContextManager(object):
     def __enter__(self):
         try:
-            MPD_SINGLETON.connect('localhost', 6600)
+            MPD_SINGLETON.ping()
         except ConnectionAbortedError as e:
             # 10053 tells us the server disconnected us for being idle
             if '10053' not in str(e):
                 raise e
-            MPD_SINGLETON.disconnect()
-            MPD_SINGLETON.connect('localhost', 6600)
+            try:
+                MPD_SINGLETON.disconnect()
+            finally:
+                MPD_SINGLETON.connect('localhost', 6600)
         except mpd.ConnectionError as e:
             if 'Already connected' not in str(e):
-                raise e
+                MPD_SINGLETON.connect('localhost', 6600)
         return MPD_SINGLETON
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        MPD_SINGLETON.disconnect()
+        pass
 
 
 def mpd_next():
