@@ -159,6 +159,11 @@ def charge_by_id(charge_id):
         if flask.request.method == 'POST':
             charge.paid = not charge.paid
             charge.save()
+        else:
+            try:
+                bill_functions.check_charge(charge)
+            except LookupError:
+                pass
     return flask.render_template('bills/charge-by-id.html', charge=charge, error=error)
 
 
