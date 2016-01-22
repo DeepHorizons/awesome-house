@@ -69,12 +69,6 @@ class Todo(BaseModel):
     description = peewee.CharField(default="")
 
 
-class Bill(BaseModel):
-    due = peewee.DateField()
-    name = peewee.CharField()
-    amount = peewee.FloatField()
-
-
 class User(Invitee):
     login_name = peewee.CharField(unique=True, max_length=64)
     password = peewee.FixedCharField(max_length=64)
@@ -84,6 +78,30 @@ class User(Invitee):
 class EventUser(BaseModel):
     event = peewee.ForeignKeyField(Event)
     invitee = peewee.ForeignKeyField(User)
+
+
+class Bill(BaseModel):
+    due = peewee.DateField()
+    name = peewee.CharField()
+    amount = peewee.FloatField()
+    maintainer = peewee.ForeignKeyField(User, related_name='bills_created')
+    description = peewee.CharField(default="", max_length=4096)
+    private = peewee.BooleanField(default=False)
+
+
+class PaymentMethod(BaseModel):
+    user = peewee.ForeignKeyField(User, related_name='payment_methods')
+    pay_online = peewee.BooleanField(default=False)
+    token = peewee.CharField(null=True, default='')
+    online_user_id = peewee.CharField(null=True, default='')
+
+
+class Charges(BaseModel):
+    bill = peewee.ForeignKeyField(Bill, related_name='charges')
+    payment_method = peewee.ForeignKeyField(PaymentMethod, related_name='charges')
+    paid = peewee.BooleanField(default=False)
+    amount = peewee.FloatField()
+    online_charge_id = peewee.CharField(null=True, default='')
 
 
 class PermissionType(BaseModel):
@@ -136,6 +154,16 @@ def find_tables(base=BaseModel):
 def add_necessary_data():
     PermissionType.get_or_create(name='authorized', description="A user who is authorized to use the site")
     PermissionType.get_or_create(name='admin', description="A user who has admin privileges, or manages authorized users")
+    PermissionType.get_or_create(name='bills', description="A user who pays bills")
+
+
+def add_admin(user):
+    for permission in PERMISSION_TYPE:
+        Permission.get_or_create(user=user, permission=PERMISSION_TYPE[permission])
+
+
+def remove_admin(user):
+    Permission.delete().where(Permission.user == user).execute()
 
 
 # Global
@@ -258,17 +286,6 @@ if __name__ == '__main__':
         Todo(task="Event yesterday task",
              event=event_yesterday).save()
 
-        # -----Bill-----
-        Bill(due=datetime.date.today(),
-             name="Electricity",
-             amount="66.34").save()
-        Bill(due=datetime.date.today() + datetime.timedelta(3),
-             name="Water",
-             amount="25").save()
-        Bill(due=datetime.date.today() - datetime.timedelta(3),
-             name="Past Bill",
-             amount="123").save()
-
         # -----User-----
         import bcrypt
         password = bcrypt.hashpw('password1'.encode(), bcrypt.gensalt(12)).decode()
@@ -278,8 +295,7 @@ if __name__ == '__main__':
                       email_me=False,
                       email="test@test.info")
         user_1.save()
-        Permission(user=user_1, permission=PERMISSION_TYPE['admin']).save()
-        Permission(user=user_1, permission=PERMISSION_TYPE['authorized']).save()
+        add_admin(user_1)
 
         password = bcrypt.hashpw('password2'.encode(), bcrypt.gensalt(12)).decode()
         user_2 = User(name='User 2',
@@ -306,13 +322,100 @@ if __name__ == '__main__':
                       login_name='user4',
                       password=password,
                       email_me=True,
-                      email="test4@test.moe",
-                      authorized=False)
+                      email="test4@test.moe")
         user_4.save()
+
+        password = bcrypt.hashpw('venmo_sandbox_user'.encode(), bcrypt.gensalt(12)).decode()
+        venmo_user = User(name='Venmo sandbox user',
+                      login_name='venmo_sandbox_user',
+                      password=password,
+                      email_me=True,
+                      email="venmo@venmo.com")
+        venmo_user.save()
 
         # -----EventUser-----
         EventUser(event=event_today, invitee=user_3).save()
         EventUser(event=event_tomorrow_7, invitee=user_2).save()
         EventUser(event=event_yesterday, invitee=user_1).save()
+
+        # -----Bill-----
+        bill_1 = Bill(due=datetime.date.today(),
+             name="Electricity",
+             amount="66.34",
+             maintainer=user_1,
+             description='Electricity bill for the month')
+        bill_1.save()
+        bill_2 = Bill(due=datetime.date.today() + datetime.timedelta(3),
+             name="Water",
+             amount="25",
+             maintainer=user_2)
+        bill_2.save()
+        bill_3 = Bill(due=datetime.date.today() - datetime.timedelta(3),
+             name="Past Bill",
+             amount="123",
+             maintainer=user_1)
+        bill_3.save()
+
+        private_bill = Bill(due=datetime.date.today() + datetime.timedelta(1),
+                            name='Private Bill',
+                            amount='56',
+                            maintainer=user_1,
+                            private=True)
+        private_bill.save()
+
+        # -----PaymentMethod-----
+        user_1_PM = PaymentMethod(user=user_1)
+        user_1_PM.save()
+        user_2_PM = PaymentMethod(user=user_2, token='abc123')
+        user_2_PM.save()
+
+        # This PM Should not be listed as user 3 does not have bill privlages
+        user_3_PM = PaymentMethod(user=user_3)
+        user_3_PM.save()
+
+        venmo_user_PM = PaymentMethod(user=venmo_user,
+                                      pay_online=True,
+                                      online_user_id='145434160922624933')
+        venmo_user_PM.save()
+
+        # -----Charges-----
+        charge_1 = Charges(bill=bill_1,
+                           payment_method=user_1_PM,
+                           paid=False,
+                           amount=33.17)
+        charge_1.save()
+        charge_2 = Charges(bill=bill_1,
+                           payment_method=user_2_PM,
+                           paid=True,
+                           amount=33.17)
+        charge_2.save()
+        charge_3 = Charges(bill=bill_2,
+                           payment_method=user_1_PM,
+                           paid=True,
+                           amount=25)
+        charge_3.save()
+        charge_4 = Charges(bill=bill_3,
+                           payment_method=user_2_PM,
+                           paid=False,
+                           amount=123)
+        charge_4.save()
+
+        private_bill_charge_1 = Charges(bill=private_bill,
+                                        payment_method=user_1_PM,
+                                        paid=False,
+                                        amount=12)
+        private_bill_charge_1.save()
+        private_bill_charge_2 = Charges(bill=private_bill,
+                                        payment_method=user_2_PM,
+                                        paid=True,
+                                        amount=12)
+        private_bill_charge_2.save()
+
+        # -----PermissionType-----
+        pass
+
+        # -----Permission-----
+        Permission(user=user_2, permission=PERMISSION_TYPE['bills']).save()
+        Permission(user=venmo_user, permission=PERMISSION_TYPE['bills']).save()
 
         return

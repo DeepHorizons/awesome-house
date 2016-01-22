@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block body %}
+    {% if error %}
+    {{ error }}
+    {% else %}
+    <div class="row">
+            <div class="col-xs-12 col-sm-8 col-md-6">
+                <div class="table-responsive">
+                    {% if charge.paid %}<del>{% endif %}
+                    <h1>Bill: <a href="/bills/by-id/{{ charge.bill.id }}">{{ charge.bill.name }}</a></h1>
+                    {% if charge.bill.maintainer.id == current_user.table_id %}<h4>User: {{ charge.payment_method.user.name }}</h4>{% endif %}
+                    <h4>Due: {{ charge.bill.due }}</h4>
+                    <h4>Amount: ${{ charge.amount }}</h4>
+                    {% if charge.paid %}</del>{% endif %}
+                    {% if charge.paid %}
+                    This bill has been paid
+                    {% else %}
+                    Not paid yet
+                    {% endif %}
+                    {% if charge.bill.maintainer.id == current_user.table_id %}
+                    <form class="form-group" action="/charge/by-id/{{ charge.id }}" method="POST">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                        <button type="submit" class="btn btn-default">{% if charge.paid %}Uncharge this user{% else %}This user has paid{% endif %}</button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

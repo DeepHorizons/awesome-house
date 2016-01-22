@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block body %}
+{% if error %}
+{{error}}
+{% else %}
+<div class="row">
+        <div class="col-xs-12 col-sm-8 col-md-6">
+            <div class="table-responsive">
+                <h1>{{ bill.name }}</h1>
+                <h2><small>{{ bill.due }}</small></h2>
+                <br>
+                <pre>{% if bill.description %}{{ bill.description }}{% else %}No description{% endif %}</pre><br>
+                <h4>Bill Total: ${{ bill.amount }}</h4>
+                <h5>Charges:</h5>
+                {% for charge in bill.charges %}
+                <div style="margin-left: 15px">
+                    {% if charge.paid %}<del>{% endif %}{% if charge.bill.maintainer.id == current_user.table_id %}{{ charge.payment_method.user.name }} - {% endif %}<a href="/charge/by-id/{{ charge.id }}">{{ charge.amount }}</a>{% if charge.paid %}</del>{% endif %}
+                </div>
+                {% else %}
+                    No Charges
+                {% endfor %}
+
+            </div>
+        </div>
+    </div>
+{% endif %}
+{% endblock %}
