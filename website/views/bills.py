@@ -76,7 +76,10 @@ def bills():
 
     # Get an update on all charges that were made online
     for charge in outstanding_charges:
-        bill_functions.check_charge(charge)
+        try:
+            bill_functions.check_charge(charge)
+        except LookupError:
+            break
 
     outstanding_charges = models.Charges.select().where(models.Charges.paid == False).execute()  # Get it again if it was updated
     outstanding_user_charges = models.Charges.select(models.Charges, models.PaymentMethod, models.Bill).join(models.PaymentMethod).switch(models.Charges).join(models.Bill).where((models.PaymentMethod.user == flask_login.current_user.table_id) & (models.Charges.paid == False)).execute()
@@ -90,10 +93,16 @@ def bills():
 @bill_functions.bills_required
 def bills_by_id(bill_id):
     try:
-        bill = models.Bill.get(models.Bill.id == bill_id)
+        bill = models.Bill.select().join(models.Charges).switch(models.Bill).where(models.Bill.id == bill_id).get()
     except peewee.DoesNotExist:
         logger.warning('User {}; Attempted access to bill ID {} that does not exist'.format(flask_login.current_user.login_name, bill_id))
         return flask.render_template('bills/bills-by-id.html', error='Bill id {} does not exit'.format(bill_id))
+
+    for charge in bill.charges:
+        try:
+            bill_functions.check_charge(charge)
+        except LookupError:
+            break
     return flask.render_template('bills/bills-by-id.html', bill=bill)
 
 
