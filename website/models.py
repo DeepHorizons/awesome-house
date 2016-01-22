@@ -325,11 +325,9 @@ if __name__ == '__main__':
                       email="test4@test.moe")
         user_4.save()
 
-        salt = base64.b64encode(os.urandom(User.salt.max_length))
-        password = hashlib.sha256('venmo_sandbox_user'.encode() + salt).hexdigest()
+        password = bcrypt.hashpw('venmo_sandbox_user'.encode(), bcrypt.gensalt(12)).decode()
         venmo_user = User(name='Venmo sandbox user',
                       login_name='venmo_sandbox_user',
-                      salt=salt.decode(),
                       password=password,
                       email_me=True,
                       email="venmo@venmo.com")
