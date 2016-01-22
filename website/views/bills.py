@@ -76,13 +76,7 @@ def bills():
 
     # Get an update on all charges that were made online
     for charge in outstanding_charges:
-        if charge.online_charge_id:
-            try:
-                bill_functions.update_charge_status(charge)
-            except LookupError as e:
-                logger.critical('Could not get charge information: {}'.format(e))
-                flask.flash('Could not get charge information')
-                break
+        bill_functions.check_charge(charge)
 
     outstanding_charges = models.Charges.select().where(models.Charges.paid == False).execute()  # Get it again if it was updated
     outstanding_user_charges = models.Charges.select(models.Charges, models.PaymentMethod, models.Bill).join(models.PaymentMethod).switch(models.Charges).join(models.Bill).where((models.PaymentMethod.user == flask_login.current_user.table_id) & (models.Charges.paid == False)).execute()

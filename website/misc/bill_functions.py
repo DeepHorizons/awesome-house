@@ -59,3 +59,13 @@ def update_charge_status(charge):
         charge.paid = True
         charge.save()
     return
+
+
+def check_charge(charge):
+    if charge.online_charge_id:
+        try:
+            update_charge_status(charge)
+        except LookupError as e:
+            logger.critical('Could not get charge information: {}'.format(e))
+            flask.flash('Could not get charge information')
+            raise
