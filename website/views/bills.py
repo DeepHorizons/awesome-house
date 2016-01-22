@@ -55,7 +55,7 @@ def bills():
                         )
 
                         # TODO charge online
-                        if payment_method.pay_online and maintainer_payment_method.pay_online and maintainer_payment_method.token:
+                        if payment_method.pay_online and maintainer_payment_method.pay_online and maintainer_payment_method.token and (user_id != flask_login.current_user.table_id):
                             response_json = bill_functions.charge_venmo(maintainer_payment_method.token, payment_method.online_user_id, new_bill.name, amount, 'private' if new_bill.private else 'friends')
                             charge.online_charge_id = response_json['data']['payment']['id']
                         charge.save()
