@@ -78,15 +78,11 @@ def bills():
     for charge in outstanding_charges:
         if charge.online_charge_id:
             try:
-                token = charge.payment_method.token if charge.payment_method.token else charge.bill.maintainer.payment_methods[0].token
-                response_json = bill_functions.venmo_get_payment_info(token, charge.online_charge_id)
+                bill_functions.update_charge_status(charge)
             except LookupError as e:
                 logger.critical('Could not get charge information: {}'.format(e))
                 flask.flash('Could not get charge information')
                 break
-            if response_json['data']['status'] == 'settled':
-                charge.paid = True
-                charge.save()
 
     outstanding_charges = models.Charges.select().where(models.Charges.paid == False).execute()  # Get it again if it was updated
     outstanding_user_charges = models.Charges.select(models.Charges, models.PaymentMethod, models.Bill).join(models.PaymentMethod).switch(models.Charges).join(models.Bill).where((models.PaymentMethod.user == flask_login.current_user.table_id) & (models.Charges.paid == False)).execute()

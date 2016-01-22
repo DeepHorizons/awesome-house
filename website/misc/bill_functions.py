@@ -49,3 +49,13 @@ def look_for_error(response):
         logger.critical('Venmo access error code {}: {}'.format(response['error']['code'], response['error']['message']))
         raise LookupError('Improper access to venmo')
     return response
+
+
+def update_charge_status(charge):
+    token = charge.payment_method.token if charge.payment_method.token else charge.bill.maintainer.payment_methods[0].token
+    response_json = venmo_get_payment_info(token, charge.online_charge_id)
+
+    if response_json['data']['status'] == 'settled':
+        charge.paid = True
+        charge.save()
+    return
