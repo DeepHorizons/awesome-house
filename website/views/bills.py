@@ -98,7 +98,7 @@ def bills_by_id(bill_id):
         logger.warning('User {}; Attempted access to bill ID {} that does not exist'.format(flask_login.current_user.login_name, bill_id))
         return flask.render_template('bills/bills-by-id.html', error='Bill id {} does not exit'.format(bill_id))
 
-    for charge in bill.charges:
+    for charge in bill.charges.where(models.Charges.paid == False):
         try:
             bill_functions.check_charge(charge)
         except LookupError:
