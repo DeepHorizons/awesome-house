@@ -84,7 +84,7 @@ def bills():
                 logger.critical('Could not get charge information: {}'.format(e))
                 flask.flash('Could not get charge information')
                 break
-            if response_json['data']['payment']['status'] == 'settled':
+            if response_json['data']['status'] == 'settled':
                 charge.paid = True
                 charge.save()
 
