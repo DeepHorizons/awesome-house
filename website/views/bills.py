@@ -106,6 +106,13 @@ def bills_by_id(bill_id):
     return flask.render_template('bills/bills-by-id.html', bill=bill)
 
 
+@app.route('/bills/past')
+@bill_functions.bills_required
+def bills_past():
+    all_bills = models.Bill.select().join(models.Charges).distinct().order_by(+models.Bill.due).execute()
+    return flask.render_template('bills/bills-past.html', all_bills=all_bills)
+
+
 @app.route('/bills/settings', methods=['GET', 'POST'])
 @bill_functions.bills_required
 def bill_payment_settings():
