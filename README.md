@@ -35,6 +35,29 @@ Then, simply run the run.py file in the website folder.
 or  
 `python run.py` if in the website folder
 
+##### uWSGI and NGINX / Production
+In order to use the site in production (on the nets) uWSGI and NGINX should be set up
+To use uWSGI and NGINX, simply symlink `uwsgi.ini` in the website/config to the uWSGI enabled folder (or available folder and then to the enabled folder),
+and symlink the `nginx.ini` to the NGINX enabled folder (or same for uwsgi).
+The ini files need to be set, in the `nginx.ini`
+* <site name>: the url of the site
+* <socket fle in uwsgi.ini>: the socket file location and name
+
+In the `uwsgi.ini` file,
+* <path to venv>: The full path to the virtual environment
+* <path to working directory>: The full path to the website/ folder (This includes the website folder)
+* <sock file>: A path to the socket file. This must be the same as in the `nginx.ini` file
+
+##### SSL cert
+The site can be encrypted using SSL/TLS.
+To do this, Get a certificate (Lets Encrypt is free) and comment the HTTP section and uncomment the HTTPS section
+Usefull tutorials are as follows:  
+https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-14-04  
+http://nginx.org/en/docs/http/configuring_https_servers.html  
+https://www.digitalocean.com/community/tutorials/how-to-serve-flask-applications-with-uwsgi-and-nginx-on-ubuntu-14-04  
+https://letsencrypt.org/howitworks/  
+
+
 Current Projects
 ----------
 #### Website
