@@ -26,7 +26,7 @@ class SettingsForm(flask_wtf.Form):
     name = wtforms.StringField(None, [wtforms.validators.Length(max=32), wtforms.validators.DataRequired()],
                                description='The name you prefer to go by')
     email = wtforms.StringField(None, [wtforms.validators.Length(max=64),
-                                          wtforms.validators.Email(), wtforms.validators.DataRequired()],
+                                          wtforms.validators.Email(), wtforms.validators.Optional()],
                                 description='This is the email you will receive notifications to')
     phone_number = wtforms.StringField(None, [wtforms.validators.Optional(), phone_number_validator],
                                        description='This is the phone number you will receive reminders to',)
