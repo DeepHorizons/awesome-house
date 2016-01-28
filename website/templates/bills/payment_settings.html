@@ -1,0 +1,33 @@
+{% import "include_html/macros.html" as macros %}
+
+{% macro gen_bill_settings(payment_form=None, next='/bills/settings') -%}
+<div class="row">
+    <div class="col-sm-6">
+    <h3>Bills</h3>
+        {% if payment_form %}
+            <form class="form-group" action="/bills/settings" method="POST">
+                {{ payment_form.hidden_tag() }}
+                <input type=hidden value="{{ next }}" name=next> <!-- This specifies to redirect to this page after the request -->
+                {{ macros.gen_group(payment_form.pay_online) }}
+                <button type="submit" class="btn btn-default">Submit</button>
+            </form>
+        {% else %}
+            HEY! You have the misfortune of paying bills. Click the button to set it up.
+            <form class="form-group" action="/bills/settings" method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                <input type="hidden" name="_method" value="PUT" />
+                <input type=hidden value="{{ next }}" name=next> <!-- This specifies to redirect to this page after the request -->
+                <button type="submit" class="btn btn-success">I agree to pay bills and whatnot</button>
+            </form>
+        {% endif %}
+    </div>
+    <br>
+    <div class="col-sm-6">
+        {% if payment_form %}
+            {% for field in payment_form %}
+                {% if field.description %}{{ field.label()}}: {{ field.description }}<br>{% endif %}
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>
+{%- endmacro %}

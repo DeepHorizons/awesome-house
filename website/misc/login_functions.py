@@ -3,6 +3,7 @@ import logging
 import flask_login
 import peewee
 import flask_login
+from functools import wraps
 import bcrypt
 
 from __init__ import app
@@ -33,6 +34,7 @@ class User(flask_login.UserMixin):
             self.email = user.email
             self.password = user.password
             self.phone_number = user.phone_number
+            self.table_id = user.id
         return
 
     @classmethod
@@ -57,9 +59,9 @@ def gen_func(permission):
             return True
     return func
 try:
-    for p_type in models.PermissionType.select():
-        prop_func = property(gen_func(p_type))
-        setattr(User, 'is_' + p_type.name, prop_func)
+    for p_type in models.PERMISSION_TYPE:
+        prop_func = property(gen_func(models.PERMISSION_TYPE[p_type]))
+        setattr(User, 'is_' + p_type, prop_func)
 except:
     pass
 
@@ -81,6 +83,7 @@ def gen_password(password):
 
 
 def admin_required(func):
+    @wraps(func)
     def decorated_view(*args, **kwargs):
         if app.login_manager._login_disabled:
             return func(*args, **kwargs)

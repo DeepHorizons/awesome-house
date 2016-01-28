@@ -15,6 +15,7 @@ from __init__ import app
 import models
 import forms.event_forms
 import misc.event_functions as event_functions
+import misc.common as common
 
 logger = logging.getLogger(__name__)
 
@@ -96,7 +97,7 @@ def todos():
             flask.flash('Successfully added todo', 'success')
             next = request.form['next']
             if next:
-                return event_functions.redirect_back('/todos')
+                return common.redirect_back('/todos')
     all_todos = models.Todo.select()
     return flask.render_template('event/todo.html', title='Todo', todos=all_todos)
 

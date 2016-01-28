@@ -1,8 +1,9 @@
 {% extends "base.html" %}
 {% import "include_html/macros.html" as macros %}
+{% import "bills/payment_settings.html" as payment_settings %}
 
 {% block body %}
-<div class="row>">
+<div class="row">
     <div class="col-sm-6">
         <h3>Settings for {{ current_user.name }}</h3>
         <form class="form-group" action="/login/settings" method="POST">
@@ -16,7 +17,6 @@
 
             {{ form.email_me.label() }}:
             {{ form.email_me() }}
-            
 
             <!-- TODO add password changer -->
 
@@ -32,5 +32,10 @@
         {% endfor %}
     </div>
 </div>
+{% if current_user.is_bills %}
+    {{ payment_settings.gen_bill_settings(payment_form, '/login/settings') }}
+{% else %}
+    Does not pay bills
+{% endif %}
 
 {% endblock %}

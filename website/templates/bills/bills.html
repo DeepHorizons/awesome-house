@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+{% import 'include_html/macros.html' as macros %}
+
+{% block extra_header %}
+<link rel="stylesheet" type="text/css" href="/static/css/bootstrap-datetimepicker.min.css">
+{% endblock %}
+
+{% block body %}
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addBill" onclick="refill_modal_users();">
+  Add Bill
+</button>
+<a type="button" class="btn btn-default" href="/bills/past">
+  View All Bills
+</a>
+
+<h2>Your charges</h2>
+<br>
+{% for charge in user_charges %}
+<h4><a href='/bills/by-id/{{ charge.bill.id }}'>{{ charge.bill.name }}</a> - <small><a href='/charge/by-id/{{ charge.id }}'>${{ charge.amount }}</a></small></h4>
+{% else %}
+No charges
+{% endfor %}
+<br>
+<h2>Outstanding Bills</h2>
+<br>
+{% for bill in outstanding_bills %}
+<h4><a href='/bills/by-id/{{ bill.id }}'>{{ bill.name }}</a> - <small>{{ bill.due }}</small></h4>
+{% else %}
+No bills
+{% endfor %}
+
+
+<!-- Modal -->
+<div class="modal fade" id="addBill" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">New Bill</h4>
+      </div>
+      <div class="modal-body">
+          <form class="form-group" action="/bills" method="POST">
+              {{ new_bill_form.hidden_tag() }}
+
+              {{ macros.gen_group(new_bill_form.name) }}
+              <div class="form-group {% if new_bill_form.amount.errors %}has-error{% endif %}">
+                {%- for error in new_bill_form.amount.errors %}
+                <label class="control-label">{{ error }}</label>
+                {%- else %}
+                {{ new_bill_form.amount.label() }}
+                {%- endfor %}
+                {{ new_bill_form.amount(class='form-control', placeholder='123.45', onkeyup='change_user_charge(this)') }}
+              </div>
+
+              <div class="form-group {% if new_bill_form.due.errors %}has-error{% endif %}">
+                  {%- for error in new_bill_form.due.errors %}
+                  <label class="control-label">{{ error }}</label>
+                  {%- else %}
+                  {{ new_bill_form.due.label() }}
+                  {%- endfor %}
+
+                  <div class='input-group date' id='datetimepicker1'>
+                      {{ new_bill_form.due(class="form-control") }}
+                      <span class="input-group-addon">
+                          <span class="glyphicon glyphicon-calendar"></span>
+                      </span>
+                  </div>
+              </div>
+
+              {{ macros.gen_group(new_bill_form.description) }}
+              <div class="checkbox">
+                  <label>
+                      {{ new_bill_form.private() }} Make Private (Will not show on bill page)
+                  </label>
+              </div>
+
+              <br>
+              <h4>List of users to charge</h4>
+              <div id="users_to_charge">
+                  {% for payment_method in payment_methods %}
+                  <div id="user_{{payment_method.user.id}}">
+                      <label class="col-xs-7">{{ payment_method.user.name }}</label>
+                      <div class="col-xs-4">
+                          <input name="user_{{payment_method.user.id}}" type="text" class="form-control charge">
+                      </div>
+                      <button class="btn col-xs-1" type="button" onclick="$('#user_{{payment_method.user.id}}').remove();"><span class="glyphicon glyphicon-remove"></span></button>
+                  </div>
+                  {% endfor %}
+              </div>
+              <button type="submit" class="btn btn-default">Submit</button>
+          </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extrajs %}
+<script type="text/javascript">
+    //Open the modal if there is an error
+    var formErrors = {% if new_bill_form.errors %}true{% else %}false{% endif %};
+    $(document).ready(function() {
+        if (formErrors) {
+            $('.modal').modal('show');
+        }
+    });
+
+    //Refill the modal on the button click
+    function refill_modal_users() {
+      var text = `{% for payment_method in payment_methods -%}
+                  <div id="user_{{payment_method.user.id}}">
+                      <label class="col-xs-7">{{ payment_method.user.name }}</label>
+                      <div class="col-xs-4">
+                          <input name="user_{{payment_method.user.id}}" type="text" class="form-control charge">
+                      </div>
+                      <button class="btn col-xs-1" type="button" onclick="$('#user_{{payment_method.user.id}}').remove();"><span class="glyphicon glyphicon-remove"></span></button>
+                  </div>
+                  {%- endfor %}`;
+      var div_to_fill = document.getElementById('users_to_charge');
+      div_to_fill.innerHTML = text;
+    }
+</script>
+<script src="/static/js/bootstrap-datetimepicker.min.js"></script>
+<script type="text/javascript">
+    $("#datetimepicker1").datetimepicker({
+        pickerPosition: "bottom-left",
+        format: "yyyy-mm-dd",  // Don't display the time
+        autoclose: true,
+        startView: 'month',  // This tells it to only pick the date. [https://github.com/smalot/bootstrap-datetimepicker/issues/416]
+        maxView: 'month',
+        minView: 'month',
+    });
+</script>
+<script type="text/javascript">
+    function change_user_charge(input) {
+        var amount = parseFloat(input.value);
+        if ($.isNumeric(amount)) {
+            console.log('asd');
+            var charges = $('.charge');
+            var per_person = amount / charges.length;
+            charges.each(function() {
+                this.value = per_person;
+            });
+        }
+    }
+    change_user_charge($('#amount')[0]);
+</script>
+{% endblock %}

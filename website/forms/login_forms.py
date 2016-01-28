@@ -26,7 +26,7 @@ class SettingsForm(flask_wtf.Form):
     name = wtforms.StringField(None, [wtforms.validators.Length(max=32), wtforms.validators.DataRequired()],
                                description='The name you prefer to go by')
     email = wtforms.StringField(None, [wtforms.validators.Length(max=64),
-                                          wtforms.validators.Email(), wtforms.validators.DataRequired()],
+                                          wtforms.validators.Email(), wtforms.validators.Optional()],
                                 description='This is the email you will receive notifications to')
     phone_number = wtforms.StringField(None, [wtforms.validators.Optional(), phone_number_validator],
                                        description='This is the phone number you will receive reminders to',)
@@ -52,7 +52,7 @@ class UserForm(flask_wtf.Form):
 
 try:
     # Set the permissions on the form
-    for p_type in models.PermissionType.select():
-        setattr(UserForm, p_type.name, wtforms.BooleanField(description=p_type.description))
+    for p_type in models.PERMISSION_TYPE:
+        setattr(UserForm, p_type, wtforms.BooleanField(description=models.PERMISSION_TYPE[p_type].description))
 except:
     pass

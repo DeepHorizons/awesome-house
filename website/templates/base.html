@@ -10,6 +10,8 @@
     <link rel="stylesheet" type="text/css" href="/static/css/bootstrap-theme.css">
     <link rel="stylesheet" type="text/css" href="/static/css/site-styles.css">
 
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     {%- block extra_header %}
