@@ -50,7 +50,7 @@ class Event(BaseModel):
 
 class Invitee(BaseModel):
     name = peewee.CharField(max_length=32)
-    email = peewee.CharField(unique=True, max_length=64)
+    email = peewee.CharField(unique=False, max_length=64)
     phone_number = peewee.CharField(null=True, default=None)
     # TODO Facebook?
 
@@ -72,7 +72,6 @@ class Todo(BaseModel):
 class User(Invitee):
     login_name = peewee.CharField(unique=True, max_length=64)
     password = peewee.FixedCharField(max_length=64)
-    email = peewee.CharField(unique=False, max_length=64)
     email_me = peewee.BooleanField(default=True)
 
 
