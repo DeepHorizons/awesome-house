@@ -130,7 +130,7 @@ def login_register():
                                 email_me=email_me,
                                 email=email).save()
                 except peewee.IntegrityError as e:
-                    logger.debug(e)
+                    logger.error(e)
                     problem_field = str(e)[str(e).find('.')+1:]
 
                     if problem_field in form.__dict__:
