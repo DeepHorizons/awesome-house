@@ -134,7 +134,7 @@ def login_register():
                     problem_field = str(e)[str(e).find('.')+1:]
 
                     if problem_field in form.__dict__:
-                        logger.warning('Problem was {}'.format(problem_field))
+                        logger.warning('Problem was {}: {}'.format(problem_field, getattr(form, problem_field).errors))
                         getattr(form, problem_field).errors.append('This entry already exists, please choose a new one')
                     else:
                         raise e
