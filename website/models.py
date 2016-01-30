@@ -72,6 +72,7 @@ class Todo(BaseModel):
 class User(Invitee):
     login_name = peewee.CharField(unique=True, max_length=64)
     password = peewee.FixedCharField(max_length=64)
+    email = peewee.CharField(unique=False, max_length=64)
     email_me = peewee.BooleanField(default=True)
 
 
